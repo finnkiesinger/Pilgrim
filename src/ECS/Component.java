@@ -1,3 +1,3 @@
-package ECS.Component;
+package ECS;
 
 public class Component {}

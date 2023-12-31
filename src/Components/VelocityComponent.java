@@ -1,6 +1,6 @@
 package Components;
 
-import ECS.Component.Component;
+import ECS.Component;
 
 public class VelocityComponent extends Component {
 }

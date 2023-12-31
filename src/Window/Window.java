@@ -97,6 +97,8 @@ public class Window {
 
     public void Loop(Game game) {
         while (!glfwWindowShouldClose(window)) {
+            game.Update(0f);
+
             glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
             game.Render();

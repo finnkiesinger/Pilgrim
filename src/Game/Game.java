@@ -1,5 +1,5 @@
 package Game;
-import ECS.Registry.Registry;
+import ECS.Registry;
 import Window.Window;
 
 public class Game {
@@ -13,6 +13,10 @@ public class Game {
 
     public void Run() {
         window.Run(this);
+    }
+
+    public void Update(float deltaTime) {
+
     }
 
     public void Render() {
