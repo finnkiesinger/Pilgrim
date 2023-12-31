@@ -39,7 +39,8 @@ public class Entity {
         return this.groups.contains(group);
     }
 
-    public Entity(Registry registry) {
+    public Entity(Registry registry, long ID) {
         this.groups = new HashSet<>();
+        this.ID = ID;
     }
 }

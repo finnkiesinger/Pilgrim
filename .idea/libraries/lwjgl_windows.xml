@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="lwjgl windows">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/libs/lwjgl windows" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/libs/lwjgl windows" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/libs/lwjgl windows" recursive="false" />
+    <jarDirectory url="file://$PROJECT_DIR$/libs/lwjgl windows" recursive="false" type="SOURCES" />
+  </library>
+</component>

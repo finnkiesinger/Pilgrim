@@ -2,13 +2,26 @@ package ECS.Registry;
 
 import ECS.Entity.Entity;
 
-import java.util.Set;
+import java.util.List;
 
 public class Registry {
     private int numEntities;
-    private Set<Long> freeIds;
+    private List<Long> freeIds;
 
     public Entity CreateEntity() {
-        return new Entity(this);
+        long ID;
+
+        if (!freeIds.isEmpty()) {
+            ID = freeIds.get(0);
+            freeIds.remove(ID);
+        } else {
+            ID = numEntities;
+        }
+
+        return new Entity(this, ID);
+    }
+
+    public void RemoveEntity(Entity entity) {
+
     }
 }
