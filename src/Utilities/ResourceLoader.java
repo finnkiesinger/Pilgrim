@@ -3,8 +3,8 @@ package Utilities;
 import java.net.URL;
 
 public class ResourceLoader {
-    public static String loadResource() {
-        URL url = ResourceLoader.class.getClassLoader().getResource("demo_car/scene.gltf");
+    public static String LoadResource(String path) {
+        URL url = ResourceLoader.class.getClassLoader().getResource(path);
         if (url != null) {
             return url.getPath();
         }

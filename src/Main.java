@@ -1,12 +1,9 @@
 import Components.PositionComponent;
 import Components.VelocityComponent;
-import ECS.ComponentManager;
 import ECS.Entity;
 import ECS.Registry;
-import Game.Game;
 import Systems.MovementSystem;
 import Utilities.ResourceLoader;
-import Window.Window;
 
 public class Main {
     public static void main(String[] args) {
@@ -15,7 +12,7 @@ public class Main {
         //game.Run();
         System.out.println(TestCorrectEntityCreation());
         System.out.println(TestCorrectComponentBehaviour());
-        System.out.println(ResourceLoader.loadResource());
+        System.out.println(ResourceLoader.LoadResource("demo_car/scene.gltf"));
     }
 
     private static boolean TestCorrectEntityCreation() {
