@@ -5,6 +5,7 @@ import ECS.Entity;
 import ECS.Registry;
 import Game.Game;
 import Systems.MovementSystem;
+import Utilities.ResourceLoader;
 import Window.Window;
 
 public class Main {
@@ -14,6 +15,7 @@ public class Main {
         //game.Run();
         System.out.println(TestCorrectEntityCreation());
         System.out.println(TestCorrectComponentBehaviour());
+        System.out.println(ResourceLoader.loadResource());
     }
 
     private static boolean TestCorrectEntityCreation() {
