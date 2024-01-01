@@ -1,4 +1,3 @@
 package EventBus;
 
-public class Event {
-}
+public class Event {}

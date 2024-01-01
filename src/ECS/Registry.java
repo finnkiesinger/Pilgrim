@@ -4,7 +4,7 @@ import java.util.*;
 
 public class Registry {
     private int numEntities;
-    private List<Long> freeIds;
+    private final List<Long> freeIds;
 
     private final List<Entity> entitiesToAdd;
     private final List<Entity> entitiesToRemove;
