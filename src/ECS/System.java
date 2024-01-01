@@ -1,11 +1,17 @@
 package ECS;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
 public class System {
-    private BitSet components;
-    private List<Entity> entities;
+    private final BitSet signature;
+    private final List<Entity> entities;
+
+    public System() {
+        this.entities = new ArrayList<>();
+        this.signature = new BitSet();
+    }
 
     public void AddEntityToSystem(Entity entity) {
         entities.add(entity);
@@ -20,6 +26,13 @@ public class System {
     }
 
     public <T extends Component> void RequireComponent(Class<T> componentClass) {
-        components.set(ComponentManager.GetID(componentClass));
+        signature.set(ComponentManager.GetID(componentClass));
+    }
+
+    public boolean SignatureMatches(BitSet signature) {
+        BitSet copy = (BitSet) signature.clone();
+        copy.and(this.signature);
+
+        return copy.equals(this.signature);
     }
 }
