@@ -2,7 +2,9 @@ import Components.PositionComponent;
 import Components.VelocityComponent;
 import ECS.Entity;
 import ECS.Registry;
+import Models.Mesh;
 import Systems.MovementSystem;
+import Utilities.ModelLoader;
 import Utilities.ResourceLoader;
 
 public class Main {
@@ -12,7 +14,13 @@ public class Main {
         //game.Run();
         System.out.println(TestCorrectEntityCreation());
         System.out.println(TestCorrectComponentBehaviour());
-        System.out.println(ResourceLoader.LoadResource("demo_car/scene.gltf"));
+        String path = ResourceLoader.GetPath("demo_car/scene.gltf");
+        System.out.println(path);
+        System.out.println(ResourceLoader.GetDirectory(path));
+        Mesh[] meshes = ModelLoader.Load("demo_car/scene.gltf");
+        if (meshes != null) {
+            System.out.println(meshes.length);
+        }
     }
 
     private static boolean TestCorrectEntityCreation() {

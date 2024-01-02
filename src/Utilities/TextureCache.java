@@ -6,6 +6,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TextureCache {
+    private static TextureCache instance = new TextureCache();
+
+    public static TextureCache GetInstance() {
+        return instance;
+    }
+
     Map<String, Texture> textures;
 
     private TextureCache() {
@@ -14,8 +20,11 @@ public class TextureCache {
 
     public Texture GetTexture(String path) {
         try {
+            Texture texture = textures.getOrDefault(path, new Texture(path));
+            textures.putIfAbsent(path, texture);
+            return texture;
         } catch(Exception e) {
-
+            return null;
         }
     }
 
