@@ -17,19 +17,22 @@ public class ShaderLibrary {
         return instance;
     }
 
-    public void load(String shaderName, String vertexShaderPath, String fragmentShaderPath, String geometryShaderPath) {
+    public void Load(String shaderName, String vertexShaderPath, String fragmentShaderPath, String geometryShaderPath) {
         Shader shader = new Shader(vertexShaderPath, fragmentShaderPath, geometryShaderPath);
 
         shaders.put(shaderName, shader);
     }
 
-    public void load(String shaderName, String shaderRoot) {
-        Shader shader = new Shader(shaderRoot + ".vert", shaderRoot + ".frag", shaderRoot + ".frag");
+    public void Load(String shaderName, String shaderRoot) {
+        String vertexPath = ResourceLoader.GetPath("shaders/" + shaderRoot + ".vert");
+        String fragmentPath = ResourceLoader.GetPath("shaders/" + shaderRoot + ".frag");
+
+        Shader shader = new Shader(vertexPath, fragmentPath, null);
 
         shaders.put(shaderName, shader);
     }
 
-    void Use(String shaderName) throws ShaderNotFoundException {
+    public void Use(String shaderName) throws ShaderNotFoundException {
         Shader shader = shaders.get(shaderName);
         if (shader != null) {
             shader.Use();

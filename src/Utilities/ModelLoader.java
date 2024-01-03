@@ -15,7 +15,7 @@ import java.util.List;
 import static org.lwjgl.assimp.Assimp.*;
 
 public class ModelLoader {
-    public static Mesh[] Load(String path) {
+    public static Model Load(String path) {
         String url = ResourceLoader.GetPath(path);
         if (url == null) {
             return null;
@@ -24,15 +24,17 @@ public class ModelLoader {
 
         int flags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_FixInfacingNormals;
 
-        AIScene scene = aiImportFile(url, flags);
+        AIScene scene = aiImportFile(FileSystem.ConvertAbsolutePath(url, Platform.GetPlatform()), flags);
 
         if (scene == null) {
+            System.out.println(aiGetErrorString());
             return null;
         }
 
         int numMaterials = scene.mNumMaterials();
         PointerBuffer aiMaterials = scene.mMaterials();
         if (aiMaterials == null) {
+            System.out.println(aiGetErrorString());
             return null;
         }
 
@@ -45,6 +47,7 @@ public class ModelLoader {
         int numMeshes = scene.mNumMeshes();
         PointerBuffer aiMeshes = scene.mMeshes();
         if (aiMeshes == null) {
+            System.out.println(aiGetErrorString());
             return null;
         }
         Mesh[] meshes = new Mesh[numMeshes];
@@ -54,7 +57,7 @@ public class ModelLoader {
             meshes[i] = mesh;
         }
 
-        return meshes;
+        return new Model(meshes);
     }
 
     private static void ProcessMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDirectory) {
