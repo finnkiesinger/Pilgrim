@@ -2,6 +2,7 @@ package Window;
 
 import Game.Game;
 import Utilities.ShaderLibrary;
+import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.MemoryStack;
@@ -21,17 +22,17 @@ public class Window {
     }
 
     private static final GLFWWindowSizeCallbackI resizeCallback = (window, width, height) -> {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            IntBuffer x = stack.mallocInt(1);
-            IntBuffer y = stack.mallocInt(1);
+        Window.ActiveWindow().SetWidth(width);
+        Window.ActiveWindow().SetHeight(height);
 
-            glfwGetWindowPos(window, x, y);
-            Window.ActiveWindow().SetWidth(width);
-            Window.ActiveWindow().SetHeight(height);
-            glViewport(x.get(), y.get(), width, height);
+        try(MemoryStack stack = MemoryStack.stackPush()) {
+            FloatBuffer scaleX = stack.mallocFloat(1);
+            FloatBuffer scaleY = stack.mallocFloat(1);
+
+            glfwGetWindowContentScale(window, scaleX, scaleY);
+            glViewport(0, 0, (int) (width * scaleX.get()), (int) (height * scaleY.get()));
         }
     };
-
 
     private final Game game;
 
@@ -55,10 +56,11 @@ public class Window {
             return;
         }
 
-        glfwDefaultWindowHints();
-        glfwWindowHint(GLFW_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_CORE_PROFILE, GLFW_TRUE);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -67,10 +69,12 @@ public class Window {
         glfwWindowHint(GLFW_BLUE_BITS, mode.blueBits());
         glfwWindowHint(GLFW_REFRESH_RATE, mode.refreshRate());
 
-        window = glfwCreateWindow(mode.width(), mode.height(), game.GetTitle(), NULL, NULL);
+        window = glfwCreateWindow(800, 600, game.GetTitle(), NULL, NULL);
 
         if (window == NULL) {
-            throw new RuntimeException("Window.Window couldn't be created");
+            PointerBuffer buffer = MemoryUtil.memAllocPointer(512);
+            glfwGetError(buffer);
+            System.out.println(buffer.getStringUTF8());
         }
 
         glfwSetKeyCallback(window, Input.handler);
@@ -80,29 +84,71 @@ public class Window {
         glfwSwapInterval(1);
 
         GL.createCapabilities();
+        GLUtil.setupDebugMessageCallback();
 
-        glfwSetWindowSizeCallback(window, resizeCallback);
-
-        try (MemoryStack stack = MemoryStack.stackPush()) {
+        try(MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer width = stack.mallocInt(1);
-            IntBuffer height = stack.mallocInt(1);
+            IntBuffer height = stack.mallocInt(2);
 
             glfwGetWindowSize(window, width, height);
-
             resizeCallback.invoke(window, width.get(), height.get());
         }
 
+        glfwSetWindowSizeCallback(window, resizeCallback);
+
         initialized = true;
     }
+
+    int vao;
+    int vbo;
+    int ebo;
+
+    float[] vertices = {
+            0.5f,  0.5f, 0.0f,
+            0.5f, -0.5f, 0.0f,
+            -0.5f, -0.5f, 0.0f,
+            -0.5f,  0.5f, 0.0f
+    };
+
+    int[] indices = {
+            0, 1, 3,
+            1, 2, 3
+    };
 
     public void Run() {
         if (!initialized) {
             throw new RuntimeException("Initializing the window failed");
         }
-
         glfwShowWindow(window);
 
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        ShaderLibrary.getInstance().Load("default", "default");
+
+        vao = glGenVertexArrays();
+        glBindVertexArray(vao);
+
+        vbo = glGenBuffers();
+        FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(vertices.length);
+        vertexBuffer.put(0, vertices);
+
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
+        MemoryUtil.memFree(vertexBuffer);
+        glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
+        glEnableVertexAttribArray(0);
+
+        ebo = glGenBuffers();
+        IntBuffer indexBuffer = MemoryUtil.memAllocInt(indices.length);
+        indexBuffer.put(0, indices);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
+        MemoryUtil.memFree(indexBuffer);
+
+        glBindVertexArray(0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+        glClearColor(0.5f, 0.5f, 0.0f, 1.0f);
 
         Loop();
 
@@ -113,10 +159,14 @@ public class Window {
 
     public void Loop() {
         while (!glfwWindowShouldClose(window)) {
-
             glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-            game.Update();
+            try {
+                ShaderLibrary.getInstance().Use("default");
+                glBindVertexArray(vao);
+                glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
+                glBindVertexArray(0);
+            } catch(Exception ignored) {}
 
             glfwSwapBuffers(window);
             glfwPollEvents();

@@ -62,8 +62,6 @@ public class Game {
         float deltaTime = GetDeltaTime();
 
         registry.Update();
-
-        Render();
     }
 
     public void Render() {
