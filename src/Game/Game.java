@@ -1,6 +1,7 @@
 package Game;
 import ECS.Registry;
 import EventBus.EventBus;
+import Models.Mesh;
 import Models.Model;
 import Utilities.ModelLoader;
 import Utilities.ShaderLibrary;
@@ -27,7 +28,21 @@ public class Game {
     private void Setup() {
         this.lastFrame = (float) glfwGetTime();
         ShaderLibrary.getInstance().Load("default", "default");
-        this.model = ModelLoader.Load("demo_car/scene.gltf");
+
+        float[] vertices = {
+                0.5f,  0.5f, 0.0f,  // top right
+                0.5f, -0.5f, 0.0f,  // bottom right
+                -0.5f, -0.5f, 0.0f,  // bottom left
+                -0.5f,  0.5f, 0.0f
+        };
+
+        int[] indices = {  // note that we start from 0!
+                0, 1, 3,   // first triangle
+                1, 2, 3    // second triangle
+        };
+
+        Mesh mesh = new Mesh(vertices, vertices, null, indices);
+        this.model = new Model(new Mesh[]{mesh});
     }
 
     public void Run() {

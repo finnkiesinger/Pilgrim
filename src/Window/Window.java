@@ -15,7 +15,10 @@ import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class Window {
-    private Game game;
+    private static Window active;
+    public static Window ActiveWindow() {
+        return active;
+    }
 
     private static final GLFWWindowSizeCallbackI resizeCallback = (window, width, height) -> {
         try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -23,15 +26,23 @@ public class Window {
             IntBuffer y = stack.mallocInt(1);
 
             glfwGetWindowPos(window, x, y);
-
+            Window.ActiveWindow().SetWidth(width);
+            Window.ActiveWindow().SetHeight(height);
             glViewport(x.get(), y.get(), width, height);
         }
     };
 
+
+    private final Game game;
+
     private boolean initialized = false;
     private long window;
 
+    private float width;
+    private float height;
+
     public Window(Game game) {
+        active = this;
         this.game = game;
         if (!glfwInit()) {
             throw new IllegalStateException("GLFW could not be initialized");
@@ -110,5 +121,17 @@ public class Window {
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
+    }
+
+    private void SetWidth(float width) {
+        this.width = width;
+    }
+
+    private void SetHeight(float height) {
+        this.height = height;
+    }
+
+    public float GetAspectRatio() {
+        return this.width / this.height;
     }
 }

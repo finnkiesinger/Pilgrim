@@ -22,7 +22,7 @@ public class ModelLoader {
         }
         String directory = ResourceLoader.GetDirectory(url);
 
-        int flags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_FixInfacingNormals;
+        int flags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
 
         AIScene scene = aiImportFile(FileSystem.ConvertAbsolutePath(url, Platform.GetPlatform()), flags);
 
