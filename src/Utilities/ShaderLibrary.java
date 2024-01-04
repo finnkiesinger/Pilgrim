@@ -9,12 +9,12 @@ import java.util.Map;
 public class ShaderLibrary {
     private static final ShaderLibrary instance = new ShaderLibrary();
     Map<String, Shader> shaders;
-    private int active;
+    private Shader active;
 
     private ShaderLibrary() {
         this.shaders = new HashMap<>();
     }
-    public static ShaderLibrary getInstance() {
+    public static ShaderLibrary Instance() {
         return instance;
     }
 
@@ -37,14 +37,18 @@ public class ShaderLibrary {
         Shader shader = shaders.get(shaderName);
         if (shader != null) {
             shader.Use();
-            active = shader.GetID();
+            active = shader;
             return;
         }
 
         throw new ShaderNotFoundException(shaderName);
     }
 
-    public int GetActiveID() {
+    public Shader GetActive() {
         return this.active;
+    }
+
+    public int GetActiveID() {
+        return this.active.GetID();
     }
 }

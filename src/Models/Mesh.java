@@ -83,15 +83,10 @@ public class Mesh {
 
     public void Draw(String shader) {
         try {
-            ShaderLibrary.getInstance().Use(shader);
-            int modelUniform = glGetUniformLocation(ShaderLibrary.getInstance().GetActiveID(), "model");
-            int viewUniform = glGetUniformLocation(ShaderLibrary.getInstance().GetActiveID(), "view");
-            int projectionUniform = glGetUniformLocation(ShaderLibrary.getInstance().GetActiveID(), "projection");
-
-            System.out.println(ShaderLibrary.getInstance().GetActiveID());
-            System.out.println("Model: " + modelUniform);
-            System.out.println("View: " + viewUniform);
-            System.out.println("Projection: " + projectionUniform);
+            ShaderLibrary.Instance().Use(shader);
+            int modelUniform = glGetUniformLocation(ShaderLibrary.Instance().GetActiveID(), "model");
+            int viewUniform = glGetUniformLocation(ShaderLibrary.Instance().GetActiveID(), "view");
+            int projectionUniform = glGetUniformLocation(ShaderLibrary.Instance().GetActiveID(), "projection");
 
             Matrix4f model = new Matrix4f();
             Matrix4f view = new Matrix4f();

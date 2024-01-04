@@ -1,13 +1,11 @@
 package Game;
 import ECS.Registry;
 import EventBus.EventBus;
-import Models.Mesh;
-import Models.Model;
-import Utilities.ModelLoader;
-import Utilities.ShaderLibrary;
-import Window.Window;
+import Models.*;
+import Window.*;
+import org.joml.Vector3f;
 
-import static org.lwjgl.glfw.GLFW.glfwGetTime;
+import static org.lwjgl.glfw.GLFW.*;
 
 public class Game {
     private final Window window;
@@ -27,22 +25,6 @@ public class Game {
 
     private void Setup() {
         this.lastFrame = (float) glfwGetTime();
-        ShaderLibrary.getInstance().Load("default", "default");
-
-        float[] vertices = {
-                0.5f,  0.5f, 0.0f,  // top right
-                0.5f, -0.5f, 0.0f,  // bottom right
-                -0.5f, -0.5f, 0.0f,  // bottom left
-                -0.5f,  0.5f, 0.0f
-        };
-
-        int[] indices = {  // note that we start from 0!
-                0, 1, 3,   // first triangle
-                1, 2, 3    // second triangle
-        };
-
-        Mesh mesh = new Mesh(vertices, vertices, null, indices);
-        this.model = new Model(new Mesh[]{mesh});
     }
 
     public void Run() {
@@ -61,7 +43,40 @@ public class Game {
     public void Update() {
         float deltaTime = GetDeltaTime();
 
+        float distance = 5.0f * deltaTime;
+
+        if (Input.IsKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
+            distance *= 2;
+        }
+
+        if (Input.IsKeyPressed(GLFW_KEY_A)) {
+            Camera.Translate(new Vector3f(-distance, 0, 0 ));
+        }
+        if (Input.IsKeyPressed(GLFW_KEY_D)) {
+            Camera.Translate(new Vector3f(distance, 0, 0));
+        }
+        if (Input.IsKeyPressed(GLFW_KEY_S)) {
+            Camera.Translate(new Vector3f(0, 0, -distance));
+        }
+        if (Input.IsKeyPressed(GLFW_KEY_W)) {
+            Camera.Translate(new Vector3f(0, 0, distance));
+        }
+        if (Input.IsKeyPressed(GLFW_KEY_Q)) {
+            Camera.Translate(new Vector3f(0, -distance, 0));
+        }
+        if (Input.IsKeyPressed(GLFW_KEY_E)) {
+            Camera.Translate(new Vector3f(0, distance, 0));
+        }
+        if (Input.IsKeyJustPressed(GLFW_KEY_H)) {
+            window.ToggleHovered();
+        }
+        if (Mouse.IsKeyPressed(GLFW_MOUSE_BUTTON_2)) {
+            Camera.Rotate(-Mouse.GetDeltaY() / 5, Mouse.GetDeltaX() / 5, 0.0f);
+        }
+
         registry.Update();
+        Input.Clear();
+        Mouse.Clear();
     }
 
     public void Render() {

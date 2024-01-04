@@ -24,7 +24,7 @@ public class ModelLoader {
 
         int flags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
 
-        AIScene scene = aiImportFile(FileSystem.ConvertAbsolutePath(url, Platform.GetPlatform()), flags);
+        AIScene scene = aiImportFile(url, flags);
 
         if (scene == null) {
             System.out.println(aiGetErrorString());

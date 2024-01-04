@@ -10,7 +10,7 @@ public class ResourceLoader {
     public static String GetPath(String path) {
         URL url = ResourceLoader.class.getClassLoader().getResource(path);
         if (url != null) {
-            return url.getPath();
+            return FileSystem.ConvertAbsolutePath(url.getPath(), Platform.GetPlatform());
         }
         return "NOT FOUND";
     }

@@ -1,7 +1,12 @@
 package Window;
 
 import Game.Game;
+import Models.Camera;
+import Models.Shader;
+import Utilities.ResourceLoader;
 import Utilities.ShaderLibrary;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -10,9 +15,11 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.*;
 
+import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL33.*;
+import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class Window {
@@ -56,11 +63,12 @@ public class Window {
             return;
         }
 
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GLFW_TRUE);
+        glfwWindowHint(GLFW_SAMPLES, 4);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
         glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
@@ -78,6 +86,8 @@ public class Window {
         }
 
         glfwSetKeyCallback(window, Input.handler);
+        glfwSetCursorPosCallback(window, Mouse.moveHandler);
+        glfwSetMouseButtonCallback(window, Mouse.buttonHandler);
 
         glfwMakeContextCurrent(window);
 
@@ -85,6 +95,7 @@ public class Window {
 
         GL.createCapabilities();
         GLUtil.setupDebugMessageCallback();
+        glEnable(GL_DEPTH_TEST);
 
         try(MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer width = stack.mallocInt(1);
@@ -102,12 +113,94 @@ public class Window {
     int vao;
     int vbo;
     int ebo;
+    int tex;
+
+    int texture1, texture2, texture3;
 
     float[] vertices = {
-            0.5f,  0.5f, 0.0f,
-            0.5f, -0.5f, 0.0f,
-            -0.5f, -0.5f, 0.0f,
-            -0.5f,  0.5f, 0.0f
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, 0.5f, -0.5f,
+            0.5f, 0.5f, -0.5f,
+            -0.5f, 0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f, 0.5f,
+            0.5f, -0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+            -0.5f, 0.5f, 0.5f,
+            -0.5f, -0.5f, 0.5f,
+            -0.5f, 0.5f, 0.5f,
+            -0.5f, 0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f, -0.5f, 0.5f,
+            -0.5f, 0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+            0.5f, 0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+            -0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, -0.5f,
+            0.5f, -0.5f, 0.5f,
+            0.5f, -0.5f, 0.5f,
+            -0.5f, -0.5f, 0.5f,
+            -0.5f, -0.5f, -0.5f,
+            -0.5f, 0.5f, -0.5f,
+            0.5f, 0.5f, -0.5f,
+            0.5f, 0.5f, 0.5f,
+            0.5f, 0.5f, 0.5f,
+            -0.5f, 0.5f, 0.5f,
+            -0.5f, 0.5f, -0.5f
+    };
+
+    float[] textures = {
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 0.0f,
+            1.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 1.0f,
+            0.0f, 0.0f,
+            1.0f, 0.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            1.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 1.0f,
+            0.0f, 1.0f,
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            1.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 1.0f
+    };
+
+
+    float[] texCoords = {
+            1.0f, 1.0f,
+            1.0f, 0.0f,
+            0.0f, 0.0f,
+            0.0f, 1.0f
     };
 
     int[] indices = {
@@ -121,7 +214,32 @@ public class Window {
         }
         glfwShowWindow(window);
 
-        ShaderLibrary.getInstance().Load("default", "default");
+        ShaderLibrary.Instance().Load("default", "default");
+
+        texture1 = glGenTextures();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texture1);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        IntBuffer width = MemoryUtil.memAllocInt(1);
+        IntBuffer height = MemoryUtil.memAllocInt(1);
+        IntBuffer channels = MemoryUtil.memAllocInt(1);
+
+        stbi_set_flip_vertically_on_load(true);
+
+        String path = ResourceLoader.GetPath("textures/concrete.png");
+
+        ByteBuffer data = stbi_load(path, width, height, channels, 4);
+        if (data != null) {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width.get(), height.get(), 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+
+            stbi_image_free(data);
+        }
+
+        memFree(width);
+        memFree(height);
+        memFree(channels);
 
         vao = glGenVertexArrays();
         glBindVertexArray(vao);
@@ -132,10 +250,19 @@ public class Window {
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
         glBufferData(GL_ARRAY_BUFFER, vertexBuffer, GL_STATIC_DRAW);
-        MemoryUtil.memFree(vertexBuffer);
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(0);
+        MemoryUtil.memFree(vertexBuffer);
 
+        tex = glGenBuffers();
+        FloatBuffer texBuffer = MemoryUtil.memAllocFloat(textures.length);
+        texBuffer.put(0, textures);
+        glBindBuffer(GL_ARRAY_BUFFER, tex);
+        glBufferData(GL_ARRAY_BUFFER, texBuffer, GL_STATIC_DRAW);
+        glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
+        glEnableVertexAttribArray(1);
+        memFree(texBuffer);
+/*
         ebo = glGenBuffers();
         IntBuffer indexBuffer = MemoryUtil.memAllocInt(indices.length);
         indexBuffer.put(0, indices);
@@ -143,12 +270,13 @@ public class Window {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer, GL_STATIC_DRAW);
         MemoryUtil.memFree(indexBuffer);
+ */
 
         glBindVertexArray(0);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-        glClearColor(0.5f, 0.5f, 0.0f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         Loop();
 
@@ -157,14 +285,32 @@ public class Window {
         glfwTerminate();
     }
 
+    boolean hovered;
+
+    public void ToggleHovered() {
+        this.hovered = !this.hovered;
+    }
+
     public void Loop() {
         while (!glfwWindowShouldClose(window)) {
             glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
+            Matrix4f projection = new Matrix4f().perspective(toRadians(45.0f), width / height, 0.1f, 100.f);
+            Matrix4f model = new Matrix4f();
+
+            game.Update();
+
             try {
-                ShaderLibrary.getInstance().Use("default");
+                ShaderLibrary.Instance().Use("default");
+                Shader shader = ShaderLibrary.Instance().GetActive();
+                glActiveTexture(GL_TEXTURE0);
+                glBindTexture(GL_TEXTURE_2D, texture1);
                 glBindVertexArray(vao);
-                glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
+                shader.SetMatrix4("model", model);
+                shader.SetMatrix4("view", Camera.GetLookAt());
+                shader.SetMatrix4("projection", projection);
+                shader.SetInt("hovered", hovered ? 1 : 0);
+                glDrawArrays(GL_TRIANGLES, 0, 36);
                 glBindVertexArray(0);
             } catch(Exception ignored) {}
 
