@@ -6,7 +6,6 @@ import Models.Shader;
 import Utilities.ResourceLoader;
 import Utilities.ShaderLibrary;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -77,7 +76,7 @@ public class Window {
         glfwWindowHint(GLFW_BLUE_BITS, mode.blueBits());
         glfwWindowHint(GLFW_REFRESH_RATE, mode.refreshRate());
 
-        window = glfwCreateWindow(800, 600, game.GetTitle(), NULL, NULL);
+        window = glfwCreateWindow(mode.width(), mode.height(), game.GetTitle(), monitor, NULL);
 
         if (window == NULL) {
             PointerBuffer buffer = MemoryUtil.memAllocPointer(512);
@@ -96,6 +95,8 @@ public class Window {
         GL.createCapabilities();
         GLUtil.setupDebugMessageCallback();
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_CULL_FACE);
+        glEnable(GL_MULTISAMPLE);
 
         try(MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer width = stack.mallocInt(1);
