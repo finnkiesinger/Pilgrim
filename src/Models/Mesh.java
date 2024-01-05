@@ -34,6 +34,8 @@ public class Mesh {
         this.normals = normals;
         VBOs = new ArrayList<>();
 
+        System.out.println(vertices.length + ", " + normals.length + ", " + textures.length + ", " + indices.length);
+
         VAO = glGenVertexArrays();
         glBindVertexArray(VAO);
 
@@ -49,6 +51,7 @@ public class Mesh {
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(0);
 
+        // normals
         VBO = glGenBuffers();
         VBOs.add(VBO);
         buffer = MemoryUtil.memAllocFloat(normals.length);
@@ -60,6 +63,7 @@ public class Mesh {
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(1);
 
+        // textures
         VBO = glGenBuffers();
         VBOs.add(VBO);
         buffer = MemoryUtil.memAllocFloat(textures.length);
@@ -70,6 +74,7 @@ public class Mesh {
         glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(2);
 
+        // indices
         VBO = glGenBuffers();
         VBOs.add(VBO);
         IntBuffer eboBuffer = MemoryUtil.memAllocInt(indices.length);
@@ -91,14 +96,6 @@ public class Mesh {
         this.model = model;
     }
 
-    private void SetUniform(int location, Matrix4f value) {
-        try (MemoryStack stack = MemoryStack.stackPush()) {
-            FloatBuffer buffer = stack.mallocFloat(16);
-            value.get(buffer);
-            glUniformMatrix4fv(location, false, buffer);
-        }
-    }
-
     public void Draw(String shaderName) {
         try {
             ShaderLibrary.Instance().Use(shaderName);
@@ -115,6 +112,8 @@ public class Mesh {
             shader.Set("projection", projection);
 
             Material material = model.GetMaterial(materialIndex);
+            shader.Set("material.diffuse", material.GetDiffuse());
+
             Texture texture = material.GetTexture();
             glActiveTexture(GL_TEXTURE0);
             texture.Bind();

@@ -23,7 +23,9 @@ public class ModelLoader {
         }
         String directory = ResourceLoader.GetDirectory(url);
 
-        int flags = aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices;
+        int flags = aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices |
+                aiProcess_Triangulate | aiProcess_FixInfacingNormals | aiProcess_CalcTangentSpace | aiProcess_LimitBoneWeights |
+                aiProcess_PreTransformVertices;
 
         AIScene scene = aiImportFile(url, flags);
 
@@ -51,14 +53,24 @@ public class ModelLoader {
             System.out.println(aiGetErrorString());
             return null;
         }
-        List<Mesh> meshes = new ArrayList<>();
+
+        Model model = new Model(materials);
+        Material defaultMaterial = new Material();
         for (int i = 0; i < numMeshes; i++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
-            Mesh mesh = ProcessMesh(aiMesh, materials);
-            meshes.add(mesh);
+            Mesh mesh = ProcessMesh(aiMesh);
+            int materialIndex = aiMesh.mMaterialIndex();
+            if (materialIndex >= 0 && materialIndex < materials.size()) {
+                mesh.SetMaterialIndex(materialIndex);
+            } else {
+                mesh.SetMaterialIndex(materials.size());
+            }
+            mesh.SetModel(model);
+            model.AddMesh(mesh);
         }
+        materials.add(defaultMaterial);
 
-        return new Model(meshes, materials);
+        return model;
     }
 
     private static void ProcessMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDirectory) {
@@ -67,26 +79,26 @@ public class ModelLoader {
         AIString aiPath = AIString.calloc();
         Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, aiPath, (IntBuffer) null, null, null, null, null, null);
         String path = aiPath.dataString();
-        Texture texture = null;
+        Texture texture = TextureCache.GetInstance().GetTexture(ResourceLoader.GetPath("textures/default.png"));
         if (!path.isEmpty()) {
             texture = TextureCache.GetInstance().GetTexture(texturesDirectory + "/" + path);
         }
 
         Vector4f ambient = Material.DEFAULT_COLOR;
         int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, color);
-        if (result == 0) {
+        if (result == aiReturn_SUCCESS) {
             ambient = new Vector4f(color.r(), color.g(), color.b(), color.a());
         }
 
         Vector4f diffuse = Material.DEFAULT_COLOR;
         result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_DIFFUSE, aiTextureType_NONE, 0, color);
-        if (result == 0) {
+        if (result == aiReturn_SUCCESS) {
             diffuse = new Vector4f(color.r(), color.g(), color.b(), color.a());
         }
 
         Vector4f specular = Material.DEFAULT_COLOR;
         result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_SPECULAR, aiTextureType_NONE, 0, color);
-        if (result == 0) {
+        if (result == aiReturn_SUCCESS) {
             specular = new Vector4f(color.r(), color.g(), color.b(), color.a());
         }
 
@@ -95,7 +107,7 @@ public class ModelLoader {
         materials.add(material);
     }
 
-    private static Mesh ProcessMesh(AIMesh aiMesh, List<Material> materials) {
+    private static Mesh ProcessMesh(AIMesh aiMesh) {
         List<Float> vertices = new ArrayList<>();
         List<Float> textures = new ArrayList<>();
         List<Float> normals = new ArrayList<>();
@@ -158,7 +170,7 @@ public class ModelLoader {
     }
     private static void ProcessIndices(AIMesh aiMesh, List<Integer> indices) {
         AIFace.Buffer aiFaces = aiMesh.mFaces();
-        int numFaces = aiFaces.mNumIndices();
+        int numFaces = aiMesh.mNumFaces();
 
         for (int i = 0; i < numFaces; i++) {
             AIFace face = aiFaces.get(i);

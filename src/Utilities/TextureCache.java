@@ -4,6 +4,7 @@ import Models.Texture;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class TextureCache {
     private static final String DEFAULT = ResourceLoader.GetPath("textures/default.png");
@@ -34,6 +35,10 @@ public class TextureCache {
 
     public int Size() {
         return textures.size();
+    }
+
+    public Set<String> GetTextureNames() {
+        return textures.keySet();
     }
 
     private Texture LoadTexture(String path) {

@@ -3,6 +3,8 @@ import ECS.Registry;
 import EventBus.EventBus;
 import Models.*;
 import Utilities.ModelLoader;
+import Utilities.ShaderLibrary;
+import Utilities.TextureCache;
 import Window.*;
 import org.joml.Vector3f;
 
@@ -26,6 +28,8 @@ public class Game {
 
     private void Setup() {
         this.lastFrame = (float) glfwGetTime();
+        ShaderLibrary.Instance().Load("default", "default");
+        ShaderLibrary.Instance().Load("model", "model");
         model = ModelLoader.Load("models/cuboid.obj");
     }
 
@@ -77,12 +81,15 @@ public class Game {
         }
 
         registry.Update();
+
+        Render();
+
         Input.Clear();
         Mouse.Clear();
     }
 
     public void Render() {
-        model.Draw("default");
+        model.Draw("model");
     }
 
     public String GetTitle() {
