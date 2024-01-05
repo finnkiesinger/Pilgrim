@@ -30,7 +30,7 @@ public class Game {
         this.lastFrame = (float) glfwGetTime();
         ShaderLibrary.Instance().Load("default", "default");
         ShaderLibrary.Instance().Load("model", "model");
-        model = ModelLoader.Load("models/cuboid.obj");
+        model = ModelLoader.Load("demo_car/scene.gltf");
     }
 
     public void Run() {

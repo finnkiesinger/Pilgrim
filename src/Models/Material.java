@@ -9,7 +9,7 @@ public class Material {
     private final Vector4f diffuse;
     private final Vector4f specular;
 
-    private Texture texture;
+    private Texture textureDiffuse;
 
 
     public Material() {
@@ -24,12 +24,12 @@ public class Material {
         this.specular = specular;
     }
 
-    public void SetTexture(Texture texture) {
-        this.texture = texture;
+    public void SetTextureDiffuse(Texture textureDiffuse) {
+        this.textureDiffuse = textureDiffuse;
     }
 
-    public Texture GetTexture() {
-        return this.texture;
+    public Texture GetTextureDiffuse() {
+        return this.textureDiffuse;
     }
 
     public Vector4f GetAmbient() {

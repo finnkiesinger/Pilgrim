@@ -95,4 +95,8 @@ public class Camera {
     public static Matrix4f GetProjection() {
         return camera._GetProjection();
     }
+
+    public static Vector3f GetPosition() {
+        return new Vector3f(camera.position.x, camera.position.y, camera.position.y);
+    }
 }

@@ -2,9 +2,11 @@ package Models;
 
 import Utilities.ShaderLibrary;
 import Window.Window;
+import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 import static org.joml.Math.*;
 
+import org.joml.Vector3f;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
@@ -13,6 +15,7 @@ import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL33.*;
 
 public class Mesh {
@@ -33,8 +36,6 @@ public class Mesh {
         this.indices = indices;
         this.normals = normals;
         VBOs = new ArrayList<>();
-
-        System.out.println(vertices.length + ", " + normals.length + ", " + textures.length + ", " + indices.length);
 
         VAO = glGenVertexArrays();
         glBindVertexArray(VAO);
@@ -103,7 +104,7 @@ public class Mesh {
             shader.Set("texture_diffuse", 0);
             shader.Set("texture_specular", 1);
 
-            Matrix4f modelMatrix = new Matrix4f();
+            Matrix4f modelMatrix = new Matrix4f().rotate((float) Math.sin(glfwGetTime()), new Vector3f(0.0f, 1.0f, 0.0f));
             Matrix4f view = Camera.GetLookAt();
             Matrix4f projection = Camera.GetProjection();
 
@@ -111,10 +112,20 @@ public class Mesh {
             shader.Set("view", view);
             shader.Set("projection", projection);
 
+
+            shader.Set("normalMatrix", modelMatrix.normal(new Matrix3f()));
+
             Material material = model.GetMaterial(materialIndex);
             shader.Set("material.diffuse", material.GetDiffuse());
+            shader.Set("material.ambient", material.GetAmbient());
 
-            Texture texture = material.GetTexture();
+            Light light = Light.GetActive();
+
+            shader.Set("light.position", light.GetPosition());
+            shader.Set("light.color", light.GetColor());
+            shader.Set("light.intensity", light.GetIntensity());
+
+            Texture texture = material.GetTextureDiffuse();
             glActiveTexture(GL_TEXTURE0);
             texture.Bind();
 

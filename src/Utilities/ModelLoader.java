@@ -79,9 +79,9 @@ public class ModelLoader {
         AIString aiPath = AIString.calloc();
         Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, aiPath, (IntBuffer) null, null, null, null, null, null);
         String path = aiPath.dataString();
-        Texture texture = TextureCache.GetInstance().GetTexture(ResourceLoader.GetPath("textures/default.png"));
+        Texture textureDiffuse = TextureCache.GetInstance().GetTexture(ResourceLoader.GetPath("textures/default.png"));
         if (!path.isEmpty()) {
-            texture = TextureCache.GetInstance().GetTexture(texturesDirectory + "/" + path);
+            textureDiffuse = TextureCache.GetInstance().GetTexture(texturesDirectory + "/" + path);
         }
 
         Vector4f ambient = Material.DEFAULT_COLOR;
@@ -103,7 +103,7 @@ public class ModelLoader {
         }
 
         Material material = new Material(ambient, diffuse, specular);
-        material.SetTexture(texture);
+        material.SetTextureDiffuse(textureDiffuse);
         materials.add(material);
     }
 
