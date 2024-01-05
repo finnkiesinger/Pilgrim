@@ -3,6 +3,7 @@ package Models;
 import Utilities.ResourceLoader;
 import Utilities.ShaderLibrary;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
@@ -73,16 +74,28 @@ public class Shader {
         return this.ID;
     }
 
-    public void SetMatrix4(String name, Matrix4f value) {
-        int location = glGetUniformLocation(ID, name);
+    private int GetLocation(String name) {
+        return glGetUniformLocation(ID, name);
+    }
+
+    public void Set(String name, Matrix4f value) {
+        int location = GetLocation(name);
         FloatBuffer buffer = MemoryUtil.memAllocFloat(16);
         value.get(buffer);
         glUniformMatrix4fv(location, false, buffer);
         MemoryUtil.memFree(buffer);
     }
 
-    public void SetInt(String name, int value) {
-        int location = glGetUniformLocation(ID, name);
+    public void Set(String name, Vector4f value) {
+        int location = GetLocation(name);
+        FloatBuffer buffer = MemoryUtil.memAllocFloat(4);
+        value.get(buffer);
+        glUniform4fv(location, buffer);
+        MemoryUtil.memFree(buffer);
+    }
+
+    public void Set(String name, int value) {
+        int location = GetLocation(name);
         glUniform1i(location, value);
     }
 }

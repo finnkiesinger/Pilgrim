@@ -2,6 +2,7 @@ package Game;
 import ECS.Registry;
 import EventBus.EventBus;
 import Models.*;
+import Utilities.ModelLoader;
 import Window.*;
 import org.joml.Vector3f;
 
@@ -25,6 +26,7 @@ public class Game {
 
     private void Setup() {
         this.lastFrame = (float) glfwGetTime();
+        model = ModelLoader.Load("models/cuboid.obj");
     }
 
     public void Run() {

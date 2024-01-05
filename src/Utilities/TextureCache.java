@@ -6,26 +6,30 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class TextureCache {
+    private static final String DEFAULT = ResourceLoader.GetPath("textures/default.png");
     private static final TextureCache instance = new TextureCache();
 
     public static TextureCache GetInstance() {
         return instance;
     }
 
-    Map<String, Texture> textures;
+    private final Map<String, Texture> textures;
 
     private TextureCache() {
         this.textures = new HashMap<>();
+        textures.put(DEFAULT, LoadTexture(DEFAULT));
     }
 
     public Texture GetTexture(String path) {
-        try {
-            Texture texture = textures.getOrDefault(path, new Texture(path));
+        Texture texture = null;
+        if (path != null) {
+            texture = textures.getOrDefault(path, LoadTexture(path));
             textures.putIfAbsent(path, texture);
-            return texture;
-        } catch(Exception e) {
-            return null;
         }
+        if (texture == null) {
+            texture = textures.get(DEFAULT);
+        }
+        return texture;
     }
 
     public int Size() {

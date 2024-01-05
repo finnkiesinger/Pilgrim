@@ -20,9 +20,13 @@ public class Mesh {
     private float[] normals;
     private int[] indices;
 
-    int VAO;
+    private final int VAO;
 
-    List<Integer> VBOs;
+    private final List<Integer> VBOs;
+
+    private int materialIndex;
+
+    private Model model;
 
     public Mesh(float[] vertices, float[] normals, float[] textures, int[] indices) {
         this.vertices = vertices;
@@ -45,8 +49,6 @@ public class Mesh {
         glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(0);
 
-        /*
-        // normals
         VBO = glGenBuffers();
         VBOs.add(VBO);
         buffer = MemoryUtil.memAllocFloat(normals.length);
@@ -57,9 +59,17 @@ public class Mesh {
 
         glVertexAttribPointer(1, 3, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(1);
-         */
 
-        // indices
+        VBO = glGenBuffers();
+        VBOs.add(VBO);
+        buffer = MemoryUtil.memAllocFloat(textures.length);
+        buffer.put(0, textures);
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, buffer, GL_STATIC_DRAW);
+        MemoryUtil.memFree(buffer);
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, 0, 0);
+        glEnableVertexAttribArray(2);
+
         VBO = glGenBuffers();
         VBOs.add(VBO);
         IntBuffer eboBuffer = MemoryUtil.memAllocInt(indices.length);
@@ -73,6 +83,14 @@ public class Mesh {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     }
 
+    public void SetMaterialIndex(int index) {
+        this.materialIndex = index;
+    }
+
+    public void SetModel(Model model) {
+        this.model = model;
+    }
+
     private void SetUniform(int location, Matrix4f value) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer buffer = stack.mallocFloat(16);
@@ -81,20 +99,25 @@ public class Mesh {
         }
     }
 
-    public void Draw(String shader) {
+    public void Draw(String shaderName) {
         try {
-            ShaderLibrary.Instance().Use(shader);
-            int modelUniform = glGetUniformLocation(ShaderLibrary.Instance().GetActiveID(), "model");
-            int viewUniform = glGetUniformLocation(ShaderLibrary.Instance().GetActiveID(), "view");
-            int projectionUniform = glGetUniformLocation(ShaderLibrary.Instance().GetActiveID(), "projection");
+            ShaderLibrary.Instance().Use(shaderName);
+            Shader shader = ShaderLibrary.Instance().GetActive();
+            shader.Set("texture_diffuse", 0);
+            shader.Set("texture_specular", 1);
 
-            Matrix4f model = new Matrix4f();
-            Matrix4f view = new Matrix4f();
-            Matrix4f projection = new Matrix4f().perspective(toRadians(45.0f), Window.ActiveWindow().GetAspectRatio(), 0.1f, 100.f);
+            Matrix4f modelMatrix = new Matrix4f();
+            Matrix4f view = Camera.GetLookAt();
+            Matrix4f projection = Camera.GetProjection();
 
-            SetUniform(modelUniform, model);
-            SetUniform(viewUniform, view);
-            SetUniform(projectionUniform, projection);
+            shader.Set("model", modelMatrix);
+            shader.Set("view", view);
+            shader.Set("projection", projection);
+
+            Material material = model.GetMaterial(materialIndex);
+            Texture texture = material.GetTexture();
+            glActiveTexture(GL_TEXTURE0);
+            texture.Bind();
 
             glBindVertexArray(VAO);
             glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);

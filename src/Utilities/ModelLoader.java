@@ -18,6 +18,7 @@ public class ModelLoader {
     public static Model Load(String path) {
         String url = ResourceLoader.GetPath(path);
         if (url == null) {
+            System.out.println("Model does not exist");
             return null;
         }
         String directory = ResourceLoader.GetDirectory(url);
@@ -50,14 +51,14 @@ public class ModelLoader {
             System.out.println(aiGetErrorString());
             return null;
         }
-        Mesh[] meshes = new Mesh[numMeshes];
+        List<Mesh> meshes = new ArrayList<>();
         for (int i = 0; i < numMeshes; i++) {
             AIMesh aiMesh = AIMesh.create(aiMeshes.get(i));
             Mesh mesh = ProcessMesh(aiMesh, materials);
-            meshes[i] = mesh;
+            meshes.add(mesh);
         }
 
-        return new Model(meshes);
+        return new Model(meshes, materials);
     }
 
     private static void ProcessMaterial(AIMaterial aiMaterial, List<Material> materials, String texturesDirectory) {
@@ -68,8 +69,7 @@ public class ModelLoader {
         String path = aiPath.dataString();
         Texture texture = null;
         if (!path.isEmpty()) {
-            TextureCache cache = TextureCache.GetInstance();
-            texture = cache.GetTexture(texturesDirectory + "/" + path);
+            texture = TextureCache.GetInstance().GetTexture(texturesDirectory + "/" + path);
         }
 
         Vector4f ambient = Material.DEFAULT_COLOR;

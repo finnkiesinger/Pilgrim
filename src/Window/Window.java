@@ -95,7 +95,6 @@ public class Window {
         GL.createCapabilities();
         GLUtil.setupDebugMessageCallback();
         glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
         glEnable(GL_MULTISAMPLE);
 
         try(MemoryStack stack = MemoryStack.stackPush()) {
@@ -228,7 +227,7 @@ public class Window {
 
         stbi_set_flip_vertically_on_load(true);
 
-        String path = ResourceLoader.GetPath("textures/concrete.png");
+        String path = ResourceLoader.GetPath("textures/container.png");
 
         ByteBuffer data = stbi_load(path, width, height, channels, 4);
         if (data != null) {
@@ -307,10 +306,10 @@ public class Window {
                 glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, texture1);
                 glBindVertexArray(vao);
-                shader.SetMatrix4("model", model);
-                shader.SetMatrix4("view", Camera.GetLookAt());
-                shader.SetMatrix4("projection", projection);
-                shader.SetInt("hovered", hovered ? 1 : 0);
+                shader.Set("model", model);
+                shader.Set("view", Camera.GetLookAt());
+                shader.Set("projection", projection);
+                shader.Set("hovered", hovered ? 1 : 0);
                 glDrawArrays(GL_TRIANGLES, 0, 36);
                 glBindVertexArray(0);
             } catch(Exception ignored) {}

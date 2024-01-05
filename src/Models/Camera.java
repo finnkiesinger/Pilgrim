@@ -1,5 +1,6 @@
 package Models;
 
+import Window.Window;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -14,7 +15,7 @@ public class Camera {
     private Vector3f right = new Vector3f();
     private Vector3f up = new Vector3f();
 
-    private float pitchLimit = 89.0f;
+    private static final float pitchLimit = 89.0f;
 
     public Camera() {
         _Rotate(0, 0, 0);
@@ -62,7 +63,7 @@ public class Camera {
     }
 
     /**
-     *
+     * Rotation
      * @param pitch in degrees
      * @param yaw in degrees
      * @param roll in degrees
@@ -85,5 +86,13 @@ public class Camera {
 
     public static Matrix4f GetLookAt() {
         return camera._GetLookAt();
+    }
+
+    private Matrix4f _GetProjection() {
+        return new Matrix4f().perspective(toRadians(45.0f), Window.ActiveWindow().GetAspectRatio(), 0.1f, 100.0f);
+    }
+
+    public static Matrix4f GetProjection() {
+        return camera._GetProjection();
     }
 }
