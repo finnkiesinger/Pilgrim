@@ -133,9 +133,9 @@ public class Mesh implements Comparable<Mesh> {
 
             Light light = Light.GetActive();
 
-            shader.Set("light.position", light.GetPosition());
-            shader.Set("light.color", light.GetColor());
-            shader.Set("light.intensity", light.GetIntensity());
+            shader.Set("pointLight.position", light.GetPosition());
+            shader.Set("pointLight.color", light.GetColor());
+            shader.Set("pointLight.intensity", light.GetIntensity());
 
             shader.Set("cameraPosition", Camera.GetPosition());
 
