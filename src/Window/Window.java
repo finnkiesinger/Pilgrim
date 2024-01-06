@@ -111,16 +111,11 @@ public class Window {
         }
         glfwShowWindow(window);
         //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         Loop();
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
         glfwTerminate();
-    }
-
-    boolean hovered;
-
-    public void ToggleHovered() {
-        this.hovered = !this.hovered;
     }
 
     public void Loop() {

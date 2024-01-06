@@ -1,6 +1,6 @@
 package Systems;
 
-import Components.PositionComponent;
+import Components.TransformComponent;
 import ECS.System;
 import EventBus.EventBus;
 import Events.CollisionEvent;
@@ -8,7 +8,7 @@ import Events.CollisionEvent;
 public class CollisionSystem extends System {
     public CollisionSystem() {
         super();
-        RequireComponent(PositionComponent.class);
+        RequireComponent(TransformComponent.class);
     }
 
     public void Update(EventBus eventBus) {

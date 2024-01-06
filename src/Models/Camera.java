@@ -7,8 +7,8 @@ import org.joml.Vector3f;
 import static org.joml.Math.toRadians;
 
 public class Camera {
-    private static Camera camera = new Camera();
-    private final Vector3f position = new Vector3f(0.0f, 1.0f, 10.0f);
+    private static Camera camera;
+    private final Vector3f position;
     private final Vector3f rotation = new Vector3f();
 
     private final Vector3f front = new Vector3f();
@@ -17,7 +17,8 @@ public class Camera {
 
     private static final float pitchLimit = 89.0f;
 
-    public Camera() {
+    public Camera(Vector3f position) {
+        this.position = position;
         _Rotate(0, 0, 0);
     }
 
@@ -98,5 +99,9 @@ public class Camera {
 
     public static Vector3f GetPosition() {
         return new Vector3f(camera.position.x, camera.position.y, camera.position.y);
+    }
+
+    public static void SetCamera(Camera camera) {
+        Camera.camera = camera;
     }
 }

@@ -104,6 +104,12 @@ public class ModelLoader {
             specular = new Vector4f(color.r(), color.g(), color.b(), color.a());
         }
 
+        Vector4f emitting = Material.DEFAULT_COLOR;
+        result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_EMISSIVE, aiTextureType_NONE, 0, color);
+        if (result == aiReturn_SUCCESS) {
+            emitting = new Vector4f(color.r(), color.g(), color.b(), color.a());
+        }
+
         float shininess = 1.0f;
 
         FloatBuffer buffer = MemoryUtil.memAllocFloat(1);
@@ -115,7 +121,7 @@ public class ModelLoader {
             shininess = buffer.get();
         }
 
-        Material material = new Material(ambient, diffuse, specular, shininess);
+        Material material = new Material(ambient, diffuse, specular, emitting, shininess);
         material.SetTextureDiffuse(textureDiffuse);
         materials.add(material);
     }

@@ -1,13 +1,13 @@
 package Systems;
 
-import Components.PositionComponent;
+import Components.TransformComponent;
 import Components.VelocityComponent;
 
 public class MovementSystem extends ECS.System {
     public MovementSystem() {
         super();
 
-        RequireComponent(PositionComponent.class);
+        RequireComponent(TransformComponent.class);
         RequireComponent(VelocityComponent.class);
     }
 

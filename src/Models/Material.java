@@ -8,6 +8,7 @@ public class Material {
     private final Vector4f ambient;
     private final Vector4f diffuse;
     private final Vector4f specular;
+    private final Vector4f emitting;
     private final float shininess;
 
     private Texture textureDiffuse;
@@ -17,14 +18,16 @@ public class Material {
         ambient = DEFAULT_COLOR;
         diffuse = DEFAULT_COLOR;
         specular = DEFAULT_COLOR;
+        emitting = DEFAULT_COLOR;
         shininess = 1.0f;
     }
 
-    public Material(Vector4f ambient, Vector4f diffuse, Vector4f specular, float shininess) {
+    public Material(Vector4f ambient, Vector4f diffuse, Vector4f specular, Vector4f emitting, float shininess) {
         this.ambient = ambient;
         this.diffuse = diffuse;
         this.specular = specular;
         this.shininess = shininess;
+        this.emitting =  emitting;
     }
 
     public void SetTextureDiffuse(Texture textureDiffuse) {
@@ -45,6 +48,10 @@ public class Material {
 
     public Vector4f GetSpecular() {
         return this.specular;
+    }
+
+    public Vector4f GetEmitting() {
+        return this.emitting;
     }
 
     public float GetShininess() {

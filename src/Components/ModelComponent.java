@@ -1,8 +1,12 @@
 package Components;
 
 import ECS.Component;
-import Models.Mesh;
+import Models.Model;
 
 public class ModelComponent extends Component {
-    public Mesh mesh;
+    public Model model;
+
+    public ModelComponent(Model model) {
+        this.model = model;
+    }
 }

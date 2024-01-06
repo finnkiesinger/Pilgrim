@@ -1,10 +1,11 @@
 package Game;
+import Components.*;
+import ECS.Entity;
 import ECS.Registry;
 import EventBus.EventBus;
 import Models.*;
-import Utilities.ModelLoader;
-import Utilities.ShaderLibrary;
-import Utilities.TextureCache;
+import Systems.*;
+import Utilities.*;
 import Window.*;
 import org.joml.Vector3f;
 
@@ -17,8 +18,6 @@ public class Game {
     private final String title;
     private float lastFrame;
 
-    private Model model;
-
     public Game(String title) {
         this.title = title;
         this.registry = new Registry();
@@ -30,7 +29,28 @@ public class Game {
         this.lastFrame = (float) glfwGetTime();
         ShaderLibrary.Instance().Load("default", "default");
         ShaderLibrary.Instance().Load("model", "model");
-        model = ModelLoader.Load("demo_car/scene.gltf");
+        Model model = ModelLoader.Load("backpack/backpack.obj");
+
+        registry.AddSystem(new RenderSystem());
+        registry.AddSystem(new CameraSystem());
+        registry.AddSystem(new DirectionalLightSystem());
+        registry.AddSystem(new PointLightSystem());
+
+        Entity modelEntity = registry.CreateEntity();
+        modelEntity.AddComponent(new ModelComponent(model));
+        modelEntity.AddComponent(new TransformComponent());
+
+        Entity directionalLightEntity = registry.CreateEntity();
+        DirectionalLightComponent directionalLight = new DirectionalLightComponent();
+        directionalLight.direction = new Vector3f(1.0f, -1.0f, 1.0f);
+        directionalLight.ambient = new Vector3f(0.1f, 0.1f, 0.1f);
+        directionalLight.diffuse = new Vector3f(0.5f, 0.5f, 0.5f);
+        directionalLight.specular = new Vector3f(1.0f, 1.0f, 1.0f);
+        directionalLightEntity.AddComponent(directionalLight);
+
+        registry.Update();
+
+        Camera.SetCamera(new Camera(new Vector3f(0.0f, 1.0f, 10.0f)));
     }
 
     public void Run() {
@@ -49,47 +69,13 @@ public class Game {
     public void Update() {
         float deltaTime = GetDeltaTime();
 
-        float distance = 5.0f * deltaTime;
-
-        if (Input.IsKeyPressed(GLFW_KEY_LEFT_SHIFT)) {
-            distance *= 2;
-        }
-
-        if (Input.IsKeyPressed(GLFW_KEY_A)) {
-            Camera.Translate(new Vector3f(-distance, 0, 0 ));
-        }
-        if (Input.IsKeyPressed(GLFW_KEY_D)) {
-            Camera.Translate(new Vector3f(distance, 0, 0));
-        }
-        if (Input.IsKeyPressed(GLFW_KEY_S)) {
-            Camera.Translate(new Vector3f(0, 0, -distance));
-        }
-        if (Input.IsKeyPressed(GLFW_KEY_W)) {
-            Camera.Translate(new Vector3f(0, 0, distance));
-        }
-        if (Input.IsKeyPressed(GLFW_KEY_Q)) {
-            Camera.Translate(new Vector3f(0, -distance, 0));
-        }
-        if (Input.IsKeyPressed(GLFW_KEY_E)) {
-            Camera.Translate(new Vector3f(0, distance, 0));
-        }
-        if (Input.IsKeyJustPressed(GLFW_KEY_H)) {
-            window.ToggleHovered();
-        }
-        if (Mouse.IsKeyPressed(GLFW_MOUSE_BUTTON_1)) {
-            Camera.Rotate(-Mouse.GetDeltaY() / 5, Mouse.GetDeltaX() / 5, 0.0f);
-        }
-
         registry.Update();
 
-        Render();
+        registry.GetSystem(CameraSystem.class).Update(deltaTime);
+        registry.GetSystem(RenderSystem.class).Update(registry);
 
         Input.Clear();
         Mouse.Clear();
-    }
-
-    public void Render() {
-        model.Draw("model");
     }
 
     public String GetTitle() {

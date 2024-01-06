@@ -1,5 +1,8 @@
 package Models;
 
+import Components.DirectionalLightComponent;
+import Components.PointLightComponent;
+import Components.TransformComponent;
 import Utilities.ShaderLibrary;
 import Window.Window;
 import org.joml.Matrix3f;
@@ -7,6 +10,7 @@ import org.joml.Matrix4f;
 import static org.joml.Math.*;
 
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
@@ -107,14 +111,19 @@ public class Mesh implements Comparable<Mesh> {
         return this.model.GetMaterial(materialIndex);
     }
 
-    public void Draw(String shaderName) {
+    public void Draw(
+            String shaderName,
+            TransformComponent transform,
+            List<DirectionalLightComponent> directionalLights,
+            List<PointLightComponent> pointLights
+    ) {
         try {
             ShaderLibrary.Instance().Use(shaderName);
             Shader shader = ShaderLibrary.Instance().GetActive();
             shader.Set("texture_diffuse", 0);
             shader.Set("texture_specular", 1);
 
-            Matrix4f modelMatrix = new Matrix4f();
+            Matrix4f modelMatrix = new Matrix4f().translate(transform.position);
             Matrix4f view = Camera.GetLookAt();
             Matrix4f projection = Camera.GetProjection();
 
@@ -129,13 +138,19 @@ public class Mesh implements Comparable<Mesh> {
             shader.Set("material.diffuse", material.GetDiffuse());
             shader.Set("material.ambient", material.GetAmbient());
             shader.Set("material.specular", material.GetSpecular());
+            shader.Set("material.emitting", material.GetEmitting());
             shader.Set("material.shininess", material.GetShininess());
 
-            Light light = Light.GetActive();
+            shader.Set("directionalLight.direction", directionalLights.getFirst().direction);
+            shader.Set("directionalLight.ambient", directionalLights.getFirst().ambient);
+            shader.Set("directionalLight.diffuse", directionalLights.getFirst().diffuse);
+            shader.Set("directionalLight.specular", directionalLights.getFirst().specular);
 
-            shader.Set("pointLight.position", light.GetPosition());
-            shader.Set("pointLight.color", light.GetColor());
-            shader.Set("pointLight.intensity", light.GetIntensity());
+            /*
+            shader.Set("pointLight.constant", 1.0f);
+            shader.Set("pointLight.linear", 0.09f);
+            shader.Set("pointLight.quadratic", 0.032f);
+            */
 
             shader.Set("cameraPosition", Camera.GetPosition());
 

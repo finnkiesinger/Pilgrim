@@ -1,5 +1,9 @@
 package Models;
 
+import Components.DirectionalLightComponent;
+import Components.PointLightComponent;
+import Components.TransformComponent;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -32,17 +36,17 @@ public class Model {
         }
     }
 
-    public void DrawOpaque(String shader) {
-        opaque.forEach(mesh -> mesh.Draw(shader));
+    public void DrawOpaque(String shader, TransformComponent transform, List<DirectionalLightComponent> directionalLights, List<PointLightComponent> pointLights) {
+        opaque.forEach(mesh -> mesh.Draw(shader, transform, directionalLights, pointLights));
     }
 
-    public void DrawTransparent(String shader) {
-        transparent.stream().sorted(Comparator.naturalOrder()).forEach(mesh -> mesh.Draw(shader));
+    public void DrawTransparent(String shader, TransformComponent transform, List<DirectionalLightComponent> directionalLights, List<PointLightComponent> pointLights) {
+        transparent.stream().sorted(Comparator.naturalOrder()).forEach(mesh -> mesh.Draw(shader, transform, directionalLights, pointLights));
     }
 
-    public void Draw(String shader) {
-        DrawOpaque(shader);
-        DrawTransparent(shader);
+    public void Draw(String shader, TransformComponent transform, List<DirectionalLightComponent> directionalLights, List<PointLightComponent> pointLights) {
+        DrawOpaque(shader, transform, directionalLights, pointLights);
+        DrawTransparent(shader, transform, directionalLights, pointLights);
     }
 
     public Material GetMaterial(int index) {
