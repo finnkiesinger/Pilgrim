@@ -30,7 +30,7 @@ public class Game {
         this.lastFrame = (float) glfwGetTime();
         ShaderLibrary.Instance().Load("default", "default");
         ShaderLibrary.Instance().Load("model", "model");
-        model = ModelLoader.Load("demo_car/scene.gltf");
+        model = ModelLoader.Load("models/cuboid.obj");
     }
 
     public void Run() {
@@ -76,7 +76,7 @@ public class Game {
         if (Input.IsKeyJustPressed(GLFW_KEY_H)) {
             window.ToggleHovered();
         }
-        if (Mouse.IsKeyPressed(GLFW_MOUSE_BUTTON_2)) {
+        if (Mouse.IsKeyPressed(GLFW_MOUSE_BUTTON_1)) {
             Camera.Rotate(-Mouse.GetDeltaY() / 5, Mouse.GetDeltaX() / 5, 0.0f);
         }
 

@@ -1,11 +1,6 @@
 package Window;
 
 import Game.Game;
-import Models.Camera;
-import Models.Shader;
-import Utilities.ResourceLoader;
-import Utilities.ShaderLibrary;
-import org.joml.Matrix4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -14,11 +9,9 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.*;
 
-import static org.joml.Math.toRadians;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL33.*;
-import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class Window {
@@ -99,7 +92,7 @@ public class Window {
         glEnable(GL_BLEND);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        try(MemoryStack stack = MemoryStack.stackPush()) {
+        try (MemoryStack stack = MemoryStack.stackPush()) {
             IntBuffer width = stack.mallocInt(1);
             IntBuffer height = stack.mallocInt(2);
 
@@ -117,8 +110,8 @@ public class Window {
             throw new RuntimeException("Initializing the window failed");
         }
         glfwShowWindow(window);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         Loop();
-
         glfwFreeCallbacks(window);
         glfwDestroyWindow(window);
         glfwTerminate();

@@ -18,7 +18,8 @@ import java.util.List;
 import static org.lwjgl.glfw.GLFW.glfwGetTime;
 import static org.lwjgl.opengl.GL33.*;
 
-public class Mesh {
+public class Mesh implements Comparable<Mesh> {
+    private final AABB aabb;
     private float[] vertices;
     private float[] normals;
     private int[] indices;
@@ -32,6 +33,11 @@ public class Mesh {
     private Model model;
 
     public Mesh(float[] vertices, float[] normals, float[] textures, int[] indices) {
+        this.aabb = new AABB();
+        for (int i = 0; i < vertices.length; i += 3) {
+            Vector3f vertex = new Vector3f(vertices[i], vertices[i + 1], vertices[i + 2]);
+            aabb.Update(vertex);
+        }
         this.vertices = vertices;
         this.indices = indices;
         this.normals = normals;
@@ -97,6 +103,10 @@ public class Mesh {
         this.model = model;
     }
 
+    public Material GetMaterial() {
+        return this.model.GetMaterial(materialIndex);
+    }
+
     public void Draw(String shaderName) {
         try {
             ShaderLibrary.Instance().Use(shaderName);
@@ -104,7 +114,7 @@ public class Mesh {
             shader.Set("texture_diffuse", 0);
             shader.Set("texture_specular", 1);
 
-            Matrix4f modelMatrix = new Matrix4f().rotate((float) Math.sin(glfwGetTime()), new Vector3f(0.0f, 1.0f, 0.0f));
+            Matrix4f modelMatrix = new Matrix4f();
             Matrix4f view = Camera.GetLookAt();
             Matrix4f projection = Camera.GetProjection();
 
@@ -118,12 +128,16 @@ public class Mesh {
             Material material = model.GetMaterial(materialIndex);
             shader.Set("material.diffuse", material.GetDiffuse());
             shader.Set("material.ambient", material.GetAmbient());
+            shader.Set("material.specular", material.GetSpecular());
+            shader.Set("material.shininess", material.GetShininess());
 
             Light light = Light.GetActive();
 
             shader.Set("light.position", light.GetPosition());
             shader.Set("light.color", light.GetColor());
             shader.Set("light.intensity", light.GetIntensity());
+
+            shader.Set("cameraPosition", Camera.GetPosition());
 
             Texture texture = material.GetTextureDiffuse();
             glActiveTexture(GL_TEXTURE0);
@@ -133,5 +147,13 @@ public class Mesh {
             glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
             glBindVertexArray(0);
         } catch (Exception ignored) {}
+    }
+
+    @Override
+    public int compareTo(Mesh o) {
+        float distance = this.aabb.GetCenter().distance(Camera.GetPosition());
+        float otherDistance = o.aabb.GetCenter().distance(Camera.GetPosition());
+
+        return (int) Math.signum(otherDistance - distance);
     }
 }

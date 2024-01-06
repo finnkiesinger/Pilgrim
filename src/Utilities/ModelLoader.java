@@ -7,7 +7,9 @@ import Models.Texture;
 import org.joml.Vector4f;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.assimp.*;
+import org.lwjgl.system.MemoryUtil;
 
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +104,18 @@ public class ModelLoader {
             specular = new Vector4f(color.r(), color.g(), color.b(), color.a());
         }
 
-        Material material = new Material(ambient, diffuse, specular);
+        float shininess = 1.0f;
+
+        FloatBuffer buffer = MemoryUtil.memAllocFloat(1);
+        IntBuffer size = MemoryUtil.memAllocInt(1);
+        size.put(0, 1);
+        result = aiGetMaterialFloatArray(aiMaterial, AI_MATKEY_SHININESS, aiTextureType_NONE, 0, buffer, size);
+
+        if (result == aiReturn_SUCCESS) {
+            shininess = buffer.get();
+        }
+
+        Material material = new Material(ambient, diffuse, specular, shininess);
         material.SetTextureDiffuse(textureDiffuse);
         materials.add(material);
     }
