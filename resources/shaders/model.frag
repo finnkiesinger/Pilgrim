@@ -38,6 +38,14 @@ struct DirectionalLight {
     vec3 specular;
 };
 
+struct SpotLight {
+    vec3 direction;
+
+    vec3 ambient;
+    vec3 diffuse;
+    vec3 specular;
+};
+
 uniform Material material;
 
 uniform PointLight pointLight;
@@ -48,7 +56,7 @@ uniform sampler2D texture_specular;
 
 uniform vec3 cameraPosition;
 
-void untextured(out vec4 color) {
+void point(out vec4 color) {
     float distance = length(pointLight.position - FragPos);
     float attenuation = 1.0 / (pointLight.constant + pointLight.linear * distance + pointLight.quadratic * (distance * distance));
 
@@ -88,9 +96,11 @@ void textured(out vec4 color) {
 }
 
 void main() {
-    vec4 color = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    vec4 directionalLight = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    directional(directionalLight);
 
-    directional(color);
+    vec4 pointLight = vec4(0.0f, 0.0f, 0.0f, 0.0f);
+    point(pointLight);
 
-    FragColor = color;
+    FragColor = directionalLight + pointLight;
 }

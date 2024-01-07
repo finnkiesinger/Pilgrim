@@ -1,5 +1,6 @@
 package Systems;
 
+import Components.CameraComponent;
 import ECS.System;
 import Models.Camera;
 import Window.Input;
@@ -10,6 +11,11 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.glfw.GLFW.GLFW_MOUSE_BUTTON_1;
 
 public class CameraSystem extends System {
+    public CameraSystem() {
+        super();
+        RequireComponent(CameraComponent.class);
+    }
+
     public void Update(float deltaTime) {
         float distance = 5.0f * deltaTime;
 

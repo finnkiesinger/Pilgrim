@@ -18,25 +18,18 @@ public class RenderSystem extends ECS.System {
     }
 
     public void Update(Registry registry) {
-        List<DirectionalLightComponent> directionalLights =
+        List<Entity> directionalLights =
                 registry.GetSystem(DirectionalLightSystem.class)
-                        .GetSystemEntities()
-                        .stream()
-                        .map(entity -> entity.GetComponent(DirectionalLightComponent.class))
-                        .toList();
+                        .GetSystemEntities();
 
-        List<PointLightComponent> pointLights =
+        List<Entity> pointLights =
                 registry.GetSystem(PointLightSystem.class)
-                        .GetSystemEntities()
-                        .stream()
-                        .map(entity -> entity.GetComponent(PointLightComponent.class))
-                        .toList();
+                        .GetSystemEntities();
 
         for (Entity entity : GetSystemEntities()) {
              Model model = entity.GetComponent(ModelComponent.class).model;
-             TransformComponent transform = entity.GetComponent(TransformComponent.class);
 
-             model.Draw("model", transform, directionalLights, pointLights);
+             model.Draw("model", entity, directionalLights, pointLights);
         }
     }
 }

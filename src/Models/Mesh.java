@@ -3,6 +3,7 @@ package Models;
 import Components.DirectionalLightComponent;
 import Components.PointLightComponent;
 import Components.TransformComponent;
+import ECS.Entity;
 import Utilities.ShaderLibrary;
 import Window.Window;
 import org.joml.Matrix3f;
@@ -113,9 +114,9 @@ public class Mesh implements Comparable<Mesh> {
 
     public void Draw(
             String shaderName,
-            TransformComponent transform,
-            List<DirectionalLightComponent> directionalLights,
-            List<PointLightComponent> pointLights
+            Entity entity,
+            List<Entity> directionalLights,
+            List<Entity> pointLights
     ) {
         try {
             ShaderLibrary.Instance().Use(shaderName);
@@ -123,7 +124,7 @@ public class Mesh implements Comparable<Mesh> {
             shader.Set("texture_diffuse", 0);
             shader.Set("texture_specular", 1);
 
-            Matrix4f modelMatrix = new Matrix4f().translate(transform.position);
+            Matrix4f modelMatrix = new Matrix4f().translate(entity.GetComponent(TransformComponent.class).position);
             Matrix4f view = Camera.GetLookAt();
             Matrix4f projection = Camera.GetProjection();
 
@@ -141,16 +142,24 @@ public class Mesh implements Comparable<Mesh> {
             shader.Set("material.emitting", material.GetEmitting());
             shader.Set("material.shininess", material.GetShininess());
 
-            shader.Set("directionalLight.direction", directionalLights.getFirst().direction);
-            shader.Set("directionalLight.ambient", directionalLights.getFirst().ambient);
-            shader.Set("directionalLight.diffuse", directionalLights.getFirst().diffuse);
-            shader.Set("directionalLight.specular", directionalLights.getFirst().specular);
+            DirectionalLightComponent directionalLight = directionalLights.getFirst().GetComponent(DirectionalLightComponent.class);
 
-            /*
-            shader.Set("pointLight.constant", 1.0f);
-            shader.Set("pointLight.linear", 0.09f);
-            shader.Set("pointLight.quadratic", 0.032f);
-            */
+            shader.Set("directionalLight.direction", directionalLight.direction);
+            shader.Set("directionalLight.ambient", directionalLight.ambient);
+            shader.Set("directionalLight.diffuse", directionalLight.diffuse);
+            shader.Set("directionalLight.specular", directionalLight.specular);
+
+            Entity pointLight = pointLights.getFirst();
+            PointLightComponent pointLightComponent = pointLight.GetComponent(PointLightComponent.class);
+            TransformComponent pointLightTransform = pointLight.GetComponent(TransformComponent.class);
+
+            shader.Set("pointLight.position", pointLightTransform.position);
+            shader.Set("pointLight.constant", pointLightComponent.constant);
+            shader.Set("pointLight.linear", pointLightComponent.linear);
+            shader.Set("pointLight.quadratic", pointLightComponent.quadratic);
+            shader.Set("pointLight.ambient", pointLightComponent.ambient);
+            shader.Set("pointLight.diffuse", pointLightComponent.diffuse);
+            shader.Set("pointLight.specular", pointLightComponent.specular);
 
             shader.Set("cameraPosition", Camera.GetPosition());
 

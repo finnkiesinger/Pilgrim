@@ -3,6 +3,7 @@ package Models;
 import Components.DirectionalLightComponent;
 import Components.PointLightComponent;
 import Components.TransformComponent;
+import ECS.Entity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,15 +37,15 @@ public class Model {
         }
     }
 
-    public void DrawOpaque(String shader, TransformComponent transform, List<DirectionalLightComponent> directionalLights, List<PointLightComponent> pointLights) {
+    public void DrawOpaque(String shader, Entity transform, List<Entity> directionalLights, List<Entity> pointLights) {
         opaque.forEach(mesh -> mesh.Draw(shader, transform, directionalLights, pointLights));
     }
 
-    public void DrawTransparent(String shader, TransformComponent transform, List<DirectionalLightComponent> directionalLights, List<PointLightComponent> pointLights) {
+    public void DrawTransparent(String shader, Entity transform, List<Entity> directionalLights, List<Entity> pointLights) {
         transparent.stream().sorted(Comparator.naturalOrder()).forEach(mesh -> mesh.Draw(shader, transform, directionalLights, pointLights));
     }
 
-    public void Draw(String shader, TransformComponent transform, List<DirectionalLightComponent> directionalLights, List<PointLightComponent> pointLights) {
+    public void Draw(String shader, Entity transform, List<Entity> directionalLights, List<Entity> pointLights) {
         DrawOpaque(shader, transform, directionalLights, pointLights);
         DrawTransparent(shader, transform, directionalLights, pointLights);
     }

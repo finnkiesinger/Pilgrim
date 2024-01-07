@@ -214,4 +214,8 @@ public class Registry {
 
         return tags.containsKey(tag);
     }
+
+    public List<System> GetSystemList() {
+        return this.systems.values().stream().toList();
+    }
 }
