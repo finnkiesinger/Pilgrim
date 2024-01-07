@@ -86,6 +86,13 @@ public class ModelLoader {
             textureDiffuse = TextureCache.GetInstance().GetTexture(texturesDirectory + "/" + path);
         }
 
+        Assimp.aiGetMaterialTexture(aiMaterial, aiTextureType_DIFFUSE, 0, aiPath, (IntBuffer) null, null, null, null, null, null);
+        path = aiPath.dataString();
+        Texture textureSpecular = TextureCache.GetInstance().GetTexture(ResourceLoader.GetPath("textures/default.png"));
+        if (!path.isEmpty()) {
+            textureSpecular = TextureCache.GetInstance().GetTexture(texturesDirectory + "/" + path);
+        }
+
         Vector4f ambient = Material.DEFAULT_COLOR;
         int result = aiGetMaterialColor(aiMaterial, AI_MATKEY_COLOR_AMBIENT, aiTextureType_NONE, 0, color);
         if (result == aiReturn_SUCCESS) {
@@ -123,6 +130,7 @@ public class ModelLoader {
 
         Material material = new Material(ambient, diffuse, specular, emitting, shininess);
         material.SetTextureDiffuse(textureDiffuse);
+        material.SetTextureSpecular(textureSpecular);
         materials.add(material);
     }
 

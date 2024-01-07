@@ -32,7 +32,7 @@ public class Game {
         ShaderLibrary.Instance().Load("default", "default");
         ShaderLibrary.Instance().Load("model", "model");
         Model car = ModelLoader.Load("demo_car/scene.gltf");
-        Model backpack = ModelLoader.Load("backpack/backpack.obj");
+        Model cuboid = ModelLoader.Load("backpack/backpack.obj");
 
         registry.AddSystem(new RenderSystem());
         registry.AddSystem(new CameraSystem());
@@ -44,14 +44,14 @@ public class Game {
         carEntity.AddComponent(new TransformComponent());
 
         Entity backpackEntity = registry.CreateEntity();
-        backpackEntity.AddComponent(new ModelComponent(backpack));
-        backpackEntity.AddComponent(new TransformComponent(new Vector3f(2.0f, 0.0f, -5.0f)));
+        backpackEntity.AddComponent(new ModelComponent(cuboid));
+        backpackEntity.AddComponent(new TransformComponent(new Vector3f(2.0f, 0.0f, -10.0f)));
 
         Entity directionalLightEntity = registry.CreateEntity();
         DirectionalLightComponent directionalLight = new DirectionalLightComponent();
-        directionalLight.direction = new Vector3f(1.0f, -1.0f, 1.0f);
+        directionalLight.direction = new Vector3f(1.0f, -1.0f, -1.0f);
         directionalLight.ambient = new Vector3f(0.1f, 0.1f, 0.1f);
-        directionalLight.diffuse = new Vector3f(0.5f, 0.5f, 0.5f);
+        directionalLight.diffuse = new Vector3f(0.8f, 0.8f, 0.8f);
         directionalLight.specular = new Vector3f(1.0f, 1.0f, 1.0f);
         directionalLightEntity.AddComponent(directionalLight);
 
@@ -61,7 +61,7 @@ public class Game {
         pointLight.ambient = new Vector3f(0.1f, 0.1f, 0.1f);
         pointLight.diffuse = new Vector3f(0.5f, 0.5f, 0.5f);
         pointLight.specular = new Vector3f(1.0f, 1.0f, 1.0f);
-        pointLight.constant = 1.0f;
+        pointLight.constant = 0.5f;
         pointLight.linear = 0.09f;
         pointLight.quadratic = 0.032f;
 

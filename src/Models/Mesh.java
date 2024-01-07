@@ -4,7 +4,9 @@ import Components.DirectionalLightComponent;
 import Components.PointLightComponent;
 import Components.TransformComponent;
 import ECS.Entity;
+import Utilities.ResourceLoader;
 import Utilities.ShaderLibrary;
+import Utilities.TextureCache;
 import Window.Window;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -142,29 +144,41 @@ public class Mesh implements Comparable<Mesh> {
             shader.Set("material.emitting", material.GetEmitting());
             shader.Set("material.shininess", material.GetShininess());
 
-            DirectionalLightComponent directionalLight = directionalLights.getFirst().GetComponent(DirectionalLightComponent.class);
+            for (int i = 0; i < directionalLights.size(); i++) {
+                DirectionalLightComponent directionalLight = directionalLights.get(i).GetComponent(DirectionalLightComponent.class);
 
-            shader.Set("directionalLight.direction", directionalLight.direction);
-            shader.Set("directionalLight.ambient", directionalLight.ambient);
-            shader.Set("directionalLight.diffuse", directionalLight.diffuse);
-            shader.Set("directionalLight.specular", directionalLight.specular);
+                shader.Set("directionalLights[" + i + "].direction", directionalLight.direction);
+                shader.Set("directionalLights[" + i + "].ambient", directionalLight.ambient);
+                shader.Set("directionalLights[" + i + "].diffuse", directionalLight.diffuse);
+                shader.Set("directionalLights[" + i + "].specular", directionalLight.specular);
+            }
 
-            Entity pointLight = pointLights.getFirst();
-            PointLightComponent pointLightComponent = pointLight.GetComponent(PointLightComponent.class);
-            TransformComponent pointLightTransform = pointLight.GetComponent(TransformComponent.class);
+            for (int i = 0; i < pointLights.size(); i++) {
+                Entity pointLight = pointLights.get(i);
+                PointLightComponent pointLightComponent = pointLight.GetComponent(PointLightComponent.class);
+                TransformComponent pointLightTransform = pointLight.GetComponent(TransformComponent.class);
 
-            shader.Set("pointLight.position", pointLightTransform.position);
-            shader.Set("pointLight.constant", pointLightComponent.constant);
-            shader.Set("pointLight.linear", pointLightComponent.linear);
-            shader.Set("pointLight.quadratic", pointLightComponent.quadratic);
-            shader.Set("pointLight.ambient", pointLightComponent.ambient);
-            shader.Set("pointLight.diffuse", pointLightComponent.diffuse);
-            shader.Set("pointLight.specular", pointLightComponent.specular);
+                shader.Set("pointLights[" + i + "].position", pointLightTransform.position);
+                shader.Set("pointLights[" + i + "].constant", pointLightComponent.constant);
+                shader.Set("pointLights[" + i + "].linear", pointLightComponent.linear);
+                shader.Set("pointLights[" + i + "].quadratic", pointLightComponent.quadratic);
+                shader.Set("pointLights[" + i + "].ambient", pointLightComponent.ambient);
+                shader.Set("pointLights[" + i + "].diffuse", pointLightComponent.diffuse);
+                shader.Set("pointLights[" + i + "].specular", pointLightComponent.specular);
+            }
 
             shader.Set("cameraPosition", Camera.GetPosition());
+            shader.Set("nrPointLights", pointLights.size());
+            shader.Set("nrDirectionalLights", directionalLights.size());
+
 
             Texture texture = material.GetTextureDiffuse();
+            shader.Set("hasTexture", texture == TextureCache.GetInstance().GetTexture(ResourceLoader.GetPath("textures/default.png")) ? 0 : 1);
             glActiveTexture(GL_TEXTURE0);
+            texture.Bind();
+
+            texture = material.GetTextureSpecular();
+            glActiveTexture(GL_TEXTURE1);
             texture.Bind();
 
             glBindVertexArray(VAO);
@@ -175,8 +189,8 @@ public class Mesh implements Comparable<Mesh> {
 
     @Override
     public int compareTo(Mesh o) {
-        float distance = this.aabb.GetCenter().distance(Camera.GetPosition());
-        float otherDistance = o.aabb.GetCenter().distance(Camera.GetPosition());
+        float distance = this.aabb.GetCenter().distanceSquared(Camera.GetPosition());
+        float otherDistance = o.aabb.GetCenter().distanceSquared(Camera.GetPosition());
 
         return (int) Math.signum(otherDistance - distance);
     }

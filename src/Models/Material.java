@@ -12,6 +12,7 @@ public class Material {
     private final float shininess;
 
     private Texture textureDiffuse;
+    private Texture textureSpecular;
 
 
     public Material() {
@@ -33,9 +34,15 @@ public class Material {
     public void SetTextureDiffuse(Texture textureDiffuse) {
         this.textureDiffuse = textureDiffuse;
     }
+    public void SetTextureSpecular(Texture textureSpecular) {
+        this.textureSpecular = textureSpecular;
+    }
 
     public Texture GetTextureDiffuse() {
         return this.textureDiffuse;
+    }
+    public Texture GetTextureSpecular() {
+        return this.textureSpecular;
     }
 
     public Vector4f GetAmbient() {

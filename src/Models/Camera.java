@@ -98,7 +98,7 @@ public class Camera {
     }
 
     public static Vector3f GetPosition() {
-        return new Vector3f(camera.position.x, camera.position.y, camera.position.y);
+        return new Vector3f(camera.position.x, camera.position.y, camera.position.z);
     }
 
     public static void SetCamera(Camera camera) {
