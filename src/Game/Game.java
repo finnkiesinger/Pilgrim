@@ -31,16 +31,21 @@ public class Game {
         this.lastFrame = (float) glfwGetTime();
         ShaderLibrary.Instance().Load("default", "default");
         ShaderLibrary.Instance().Load("model", "model");
-        Model model = ModelLoader.Load("demo_car/scene.gltf");
+        Model car = ModelLoader.Load("demo_car/scene.gltf");
+        Model backpack = ModelLoader.Load("backpack/backpack.obj");
 
         registry.AddSystem(new RenderSystem());
         registry.AddSystem(new CameraSystem());
         registry.AddSystem(new DirectionalLightSystem());
         registry.AddSystem(new PointLightSystem());
 
-        Entity modelEntity = registry.CreateEntity();
-        modelEntity.AddComponent(new ModelComponent(model));
-        modelEntity.AddComponent(new TransformComponent());
+        Entity carEntity = registry.CreateEntity();
+        carEntity.AddComponent(new ModelComponent(car));
+        carEntity.AddComponent(new TransformComponent());
+
+        Entity backpackEntity = registry.CreateEntity();
+        backpackEntity.AddComponent(new ModelComponent(backpack));
+        backpackEntity.AddComponent(new TransformComponent(new Vector3f(2.0f, 0.0f, -5.0f)));
 
         Entity directionalLightEntity = registry.CreateEntity();
         DirectionalLightComponent directionalLight = new DirectionalLightComponent();
