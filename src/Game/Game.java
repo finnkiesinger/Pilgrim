@@ -29,6 +29,7 @@ public class Game {
         this.lastFrame = (float) glfwGetTime();
         ShaderLibrary.Instance().Load("default", "default");
         ShaderLibrary.Instance().Load("model", "model");
+        ShaderLibrary.Instance().Load("skybox", "skybox");
         Model car = ModelLoader.Load("demo_car/scene.gltf");
         Model cuboid = ModelLoader.Load("backpack/backpack.obj");
 
@@ -36,6 +37,7 @@ public class Game {
         registry.AddSystem(new CameraSystem());
         registry.AddSystem(new DirectionalLightSystem());
         registry.AddSystem(new PointLightSystem());
+        registry.AddSystem(new EnvironmentRenderSystem());
 
         Entity carEntity = registry.CreateEntity();
         carEntity.AddComponent(new ModelComponent(car));
@@ -65,10 +67,13 @@ public class Game {
 
         TransformComponent pointLightTransform = new TransformComponent();
 
-        pointLightTransform.position = new Vector3f(0.0f, 1.0f, 5.0f);
+        pointLightTransform.SetPosition(new Vector3f(0.0f, 1.0f, 5.0f));
 
         pointLightEntity.AddComponent(pointLight);
         pointLightEntity.AddComponent(pointLightTransform);
+
+        Entity environment = registry.CreateEntity();
+        environment.AddComponent(new EnvironmentComponent("skybox"));
 
         registry.Update();
 
@@ -94,6 +99,7 @@ public class Game {
         registry.Update();
 
         registry.GetSystem(CameraSystem.class).Update(deltaTime);
+        registry.GetSystem(EnvironmentRenderSystem.class).Update();
         registry.GetSystem(RenderSystem.class).Update(registry);
 
         Input.Clear();

@@ -33,12 +33,12 @@ public class ShaderLibrary {
         shaders.put(shaderName, shader);
     }
 
-    public void Use(String shaderName) throws ShaderNotFoundException {
+    public Shader Use(String shaderName) throws ShaderNotFoundException {
         Shader shader = shaders.get(shaderName);
         if (shader != null) {
             shader.Use();
             active = shader;
-            return;
+            return shader;
         }
 
         throw new ShaderNotFoundException(shaderName);

@@ -18,8 +18,8 @@ public class RenderSystem extends ECS.System {
     }
 
     private static final Comparator<Entity> comparator = (e1, e2) -> {
-        float distance1 = e1.GetComponent(TransformComponent.class).position.distanceSquared(Camera.GetPosition());
-        float distance2 = e2.GetComponent(TransformComponent.class).position.distanceSquared(Camera.GetPosition());
+        float distance1 = e1.GetComponent(TransformComponent.class).GetPosition().distanceSquared(Camera.GetPosition());
+        float distance2 = e2.GetComponent(TransformComponent.class).GetPosition().distanceSquared(Camera.GetPosition());
 
         return (int) Math.signum(distance2 - distance1);
     };

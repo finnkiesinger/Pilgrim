@@ -121,12 +121,11 @@ public class Mesh implements Comparable<Mesh> {
             List<Entity> pointLights
     ) {
         try {
-            ShaderLibrary.Instance().Use(shaderName);
-            Shader shader = ShaderLibrary.Instance().GetActive();
+            Shader shader = ShaderLibrary.Instance().Use(shaderName);
             shader.Set("texture_diffuse", 0);
             shader.Set("texture_specular", 1);
 
-            Matrix4f modelMatrix = new Matrix4f().translate(entity.GetComponent(TransformComponent.class).position);
+            Matrix4f modelMatrix = entity.GetComponent(TransformComponent.class).transform;
             Matrix4f view = Camera.GetLookAt();
             Matrix4f projection = Camera.GetProjection();
 
@@ -158,7 +157,7 @@ public class Mesh implements Comparable<Mesh> {
                 PointLightComponent pointLightComponent = pointLight.GetComponent(PointLightComponent.class);
                 TransformComponent pointLightTransform = pointLight.GetComponent(TransformComponent.class);
 
-                shader.Set("pointLights[" + i + "].position", pointLightTransform.position);
+                shader.Set("pointLights[" + i + "].position", pointLightTransform.GetPosition());
                 shader.Set("pointLights[" + i + "].constant", pointLightComponent.constant);
                 shader.Set("pointLights[" + i + "].linear", pointLightComponent.linear);
                 shader.Set("pointLights[" + i + "].quadratic", pointLightComponent.quadratic);
