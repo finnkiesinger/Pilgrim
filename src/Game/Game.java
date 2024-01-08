@@ -78,15 +78,17 @@ public class Game {
         Entity spotLightEntity = registry.CreateEntity();
 
         SpotLightComponent spotLightComponent = new SpotLightComponent();
-        spotLightComponent.cutOff = 12.5f;
-        spotLightComponent.ambient = new Vector3f(0.1f, 0.1f, 0.1f);
-        spotLightComponent.diffuse = new Vector3f(0.5f, 0.5f, 0.5f);
+        spotLightComponent.cutOff = 5.0f;
+        spotLightComponent.outerCutOff = 10.0f;
+        spotLightComponent.ambient = new Vector3f(0.5f, 0.5f, 0.5f);
+        spotLightComponent.diffuse = new Vector3f(0.8f, 0.8f, 0.8f);
         spotLightComponent.specular = new Vector3f(1.0f, 1.0f, 1.0f);
         spotLightComponent.constant = 0.5f;
         spotLightComponent.linear = 0.09f;
         spotLightComponent.quadratic = 0.032f;
 
         TransformComponent spotLightTransform = new TransformComponent();
+        spotLightTransform.SetPosition(new Vector3f(2.0f, 0.0f, -7.0f));
         spotLightTransform.SetRotation(new Vector3f(0.0f, 180.0f, 0.0f));
 
         spotLightEntity.AddComponent(spotLightTransform);

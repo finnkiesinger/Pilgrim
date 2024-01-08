@@ -37,17 +37,17 @@ public class Model {
         }
     }
 
-    public void DrawOpaque(String shader, Entity transform, List<Entity> directionalLights, List<Entity> pointLights, Skybox skybox) {
-        opaque.forEach(mesh -> mesh.Draw(shader, transform, directionalLights, pointLights, skybox));
+    public void DrawOpaque(String shader, Entity transform, List<Entity> directionalLights, List<Entity> pointLights, List<Entity> spotLights, Skybox skybox) {
+        opaque.forEach(mesh -> mesh.Draw(shader, transform, directionalLights, pointLights, spotLights, skybox));
     }
 
-    public void DrawTransparent(String shader, Entity transform, List<Entity> directionalLights, List<Entity> pointLights, Skybox skybox) {
-        transparent.stream().sorted(Comparator.reverseOrder()).forEach(mesh -> mesh.Draw(shader, transform, directionalLights, pointLights, skybox));
+    public void DrawTransparent(String shader, Entity transform, List<Entity> directionalLights, List<Entity> pointLights, List<Entity> spotLights, Skybox skybox) {
+        transparent.stream().sorted(Comparator.reverseOrder()).forEach(mesh -> mesh.Draw(shader, transform, directionalLights, pointLights, spotLights, skybox));
     }
 
-    public void Draw(String shader, Entity transform, List<Entity> directionalLights, List<Entity> pointLights, Skybox skybox) {
-        DrawOpaque(shader, transform, directionalLights, pointLights, skybox);
-        DrawTransparent(shader, transform, directionalLights, pointLights, skybox);
+    public void Draw(String shader, Entity transform, List<Entity> directionalLights, List<Entity> pointLights, List<Entity> spotLights, Skybox skybox) {
+        DrawOpaque(shader, transform, directionalLights, pointLights, spotLights, skybox);
+        DrawTransparent(shader, transform, directionalLights, pointLights, spotLights, skybox);
     }
 
     public Material GetMaterial(int index) {

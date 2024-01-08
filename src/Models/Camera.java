@@ -104,4 +104,12 @@ public class Camera {
     public static void SetCamera(Camera camera) {
         Camera.camera = camera;
     }
+
+    public Vector3f _GetFront() {
+        return this.front;
+    }
+
+    public static Vector3f GetFront() {
+        return camera._GetFront();
+    }
 }

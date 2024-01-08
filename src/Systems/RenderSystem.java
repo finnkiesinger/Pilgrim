@@ -35,6 +35,10 @@ public class RenderSystem extends ECS.System {
                 registry.GetSystem(PointLightSystem.class)
                         .GetSystemEntities();
 
+        List<Entity> spotLights =
+                registry.GetSystem(SpotLightSystem.class)
+                        .GetSystemEntities();
+
         Skybox skybox = null;
 
         EnvironmentRenderSystem environmentSystem = registry.GetSystem(EnvironmentRenderSystem.class);
@@ -46,7 +50,7 @@ public class RenderSystem extends ECS.System {
         for (Entity entity : GetSystemEntities().stream().sorted(comparator).toList()) {
              Model model = entity.GetComponent(ModelComponent.class).model;
 
-             model.Draw("model", entity, directionalLights, pointLights, skybox);
+             model.Draw("model", entity, directionalLights, pointLights, spotLights, skybox);
         }
     }
 }

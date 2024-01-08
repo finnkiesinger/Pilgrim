@@ -39,20 +39,29 @@ struct DirectionalLight {
 };
 
 struct SpotLight {
+    vec3 position;
     vec3 direction;
+    float cutOff;
+    float outerCutOff;
 
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
+
+    float constant;
+    float linear;
+    float quadratic;
 };
 
 uniform Material material;
 
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 uniform DirectionalLight directionalLights[MAX_DIRECTIONAL_LIGHTS];
+uniform SpotLight spotLights[MAX_SPOT_LIGHTS];
 
 uniform int nrPointLights;
 uniform int nrDirectionalLights;
+uniform int nrSpotLights;
 
 uniform sampler2D texture_diffuse;
 uniform sampler2D texture_specular;
@@ -60,6 +69,9 @@ uniform sampler2D texture_specular;
 uniform vec3 cameraPosition;
 
 uniform int hasTexture;
+uniform int hasSkybox;
+
+uniform samplerCube skybox;
 
 void point(
     in PointLight pointLight,
@@ -88,6 +100,36 @@ void point(
     color += (ambient + diffuse + specular);
 }
 
+void spot(
+    in SpotLight spotLight,
+    in vec3 norm,
+    in vec3 viewDir,
+    inout vec4 color,
+    in vec4 matAmbient,
+    in vec4 matDiffuse,
+    in vec4 matSpecular
+) {
+    vec3 lightDir = normalize(spotLight.position - FragPos);
+    float theta = dot(lightDir, normalize(-spotLight.direction));
+    float epsilon = spotLight.cutOff - spotLight.outerCutOff;
+    float intensity = clamp((theta - spotLight.outerCutOff) / epsilon, 0.0f, 1.0f);
+
+    if (theta > spotLight.outerCutOff) {
+        float distance = length(spotLight.position - FragPos);
+        float attenuation = 1.0 / (spotLight.constant + spotLight.linear * distance + spotLight.quadratic * (distance * distance));
+
+        float D = max(dot(norm, lightDir), 0.0);
+        vec4 diffuse = vec4(intensity * D * attenuation * vec3(matDiffuse), matDiffuse.w) * vec4(spotLight.diffuse, 1.0f);
+
+
+        vec3 reflectDir = reflect(-lightDir, norm);
+        float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+        vec4 specular = intensity * spec * attenuation * matSpecular * vec4(spotLight.specular, 1.0f);
+
+        color += (diffuse + specular);
+    }
+}
+
 void directional(
     in DirectionalLight directionalLight,
     in vec3 norm,
@@ -101,6 +143,7 @@ void directional(
     float D = max(dot(norm, lightDir), 0.0);
 
     vec4 ambient = matAmbient * vec4(directionalLight.ambient, 1.0f);
+
     vec4 diffuse = vec4(D * vec3(matDiffuse), matDiffuse.w) * vec4(directionalLight.diffuse, 1.0f);
 
     vec3 reflectDir = reflect(-lightDir, norm);
@@ -136,6 +179,10 @@ void main() {
 
     for (int i = 0; i < nrDirectionalLights; i++) {
         point(pointLights[i], norm, viewDir, result, matAmbient, matDiffuse, matSpecular);
+    }
+
+    for (int i = 0; i < nrSpotLights; i++) {
+        spot(spotLights[i], norm, viewDir, result, matAmbient, matDiffuse, matSpecular);
     }
 
     FragColor = result;

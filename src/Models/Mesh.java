@@ -2,6 +2,7 @@ package Models;
 
 import Components.DirectionalLightComponent;
 import Components.PointLightComponent;
+import Components.SpotLightComponent;
 import Components.TransformComponent;
 import ECS.Entity;
 import Utilities.ResourceLoader;
@@ -119,6 +120,7 @@ public class Mesh implements Comparable<Mesh> {
             Entity entity,
             List<Entity> directionalLights,
             List<Entity> pointLights,
+            List<Entity> spotLights,
             Skybox skybox
     ) {
         try {
@@ -167,9 +169,39 @@ public class Mesh implements Comparable<Mesh> {
                 shader.Set("pointLights[" + i + "].specular", pointLightComponent.specular);
             }
 
+            for (int i = 0; i < spotLights.size(); i++) {
+                Entity spotLight = spotLights.get(i);
+                SpotLightComponent spotLightComponent = spotLight.GetComponent(SpotLightComponent.class);
+                TransformComponent spotLightTransform = spotLight.GetComponent(TransformComponent.class);
+
+                /*
+                shader.Set("spotLights[" + i + "].position", spotLightTransform.GetPosition());
+                Vector3f rotation = spotLightTransform.GetRotation();
+                Vector3f direction = new Vector3f(0.0f, 0.0f, 1.0f);
+                direction.rotateX(toRadians(rotation.x));
+                direction.rotateY(toRadians(rotation.y));
+                direction.rotateZ(toRadians(rotation.z));
+                direction.normalize();
+                shader.Set("spotLights[" + i + "].direction", direction);
+                */
+
+                shader.Set("spotLights[" + i + "].position", Camera.GetPosition());
+                shader.Set("spotLights[" + i + "].direction", Camera.GetFront());
+
+                shader.Set("spotLights[" + i + "].cutOff", cos(toRadians(spotLightComponent.cutOff)));
+                shader.Set("spotLights[" + i + "].outerCutOff", cos(toRadians(spotLightComponent.outerCutOff)));
+                shader.Set("spotLights[" + i + "].constant", spotLightComponent.constant);
+                shader.Set("spotLights[" + i + "].linear", spotLightComponent.linear);
+                shader.Set("spotLights[" + i + "].quadratic", spotLightComponent.quadratic);
+                shader.Set("spotLights[" + i + "].ambient", spotLightComponent.ambient);
+                shader.Set("spotLights[" + i + "].diffuse", spotLightComponent.diffuse);
+                shader.Set("spotLights[" + i + "].specular", spotLightComponent.specular);
+            }
+
             shader.Set("cameraPosition", Camera.GetPosition());
             shader.Set("nrPointLights", pointLights.size());
             shader.Set("nrDirectionalLights", directionalLights.size());
+            shader.Set("nrSpotLights", spotLights.size());
 
             Texture texture = material.GetTextureDiffuse();
             shader.Set("hasTexture", texture == TextureCache.GetInstance().GetTexture(ResourceLoader.GetPath("textures/default.png")) ? 0 : 1);
