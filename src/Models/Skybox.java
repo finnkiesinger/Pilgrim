@@ -45,11 +45,16 @@ public class Skybox {
             cubemap.Bind();
             glBindVertexArray(VAO);
             glDrawArrays(GL_TRIANGLES, 0, 36);
+            glBindVertexArray(0);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
 
 
         glDepthMask(true);
+    }
+
+    public Cubemap GetCubemap() {
+        return this.cubemap;
     }
 }

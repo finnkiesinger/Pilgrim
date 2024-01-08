@@ -1,11 +1,13 @@
 package Systems;
 
+import Components.EnvironmentComponent;
 import Components.ModelComponent;
 import Components.TransformComponent;
 import ECS.Entity;
 import ECS.Registry;
 import Models.Camera;
 import Models.Model;
+import Models.Skybox;
 
 import java.util.Comparator;
 import java.util.List;
@@ -33,10 +35,18 @@ public class RenderSystem extends ECS.System {
                 registry.GetSystem(PointLightSystem.class)
                         .GetSystemEntities();
 
+        Skybox skybox = null;
+
+        EnvironmentRenderSystem environmentSystem = registry.GetSystem(EnvironmentRenderSystem.class);
+
+        if (!environmentSystem.GetSystemEntities().isEmpty()) {
+            skybox = environmentSystem.GetSystemEntities().getFirst().GetComponent(EnvironmentComponent.class).skybox;
+        }
+
         for (Entity entity : GetSystemEntities().stream().sorted(comparator).toList()) {
              Model model = entity.GetComponent(ModelComponent.class).model;
 
-             model.Draw("model", entity, directionalLights, pointLights);
+             model.Draw("model", entity, directionalLights, pointLights, skybox);
         }
     }
 }

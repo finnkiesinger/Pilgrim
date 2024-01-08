@@ -9,6 +9,8 @@ import Utilities.*;
 import Window.*;
 import org.joml.Vector3f;
 
+import javax.xml.crypto.dsig.Transform;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Game {
@@ -37,6 +39,7 @@ public class Game {
         registry.AddSystem(new CameraSystem());
         registry.AddSystem(new DirectionalLightSystem());
         registry.AddSystem(new PointLightSystem());
+        registry.AddSystem(new SpotLightSystem());
         registry.AddSystem(new EnvironmentRenderSystem());
 
         Entity carEntity = registry.CreateEntity();
@@ -45,12 +48,12 @@ public class Game {
 
         Entity backpackEntity = registry.CreateEntity();
         backpackEntity.AddComponent(new ModelComponent(cuboid));
-        backpackEntity.AddComponent(new TransformComponent(new Vector3f(2.0f, 0.0f, -10.0f)));
+        backpackEntity.AddComponent(new TransformComponent(new Vector3f(2.0f, 0.0f, -10.0f), new Vector3f(0, 0, 0.0f), new Vector3f(0.5f)));
 
         Entity directionalLightEntity = registry.CreateEntity();
         DirectionalLightComponent directionalLight = new DirectionalLightComponent();
-        directionalLight.direction = new Vector3f(1.0f, -1.0f, -1.0f);
-        directionalLight.ambient = new Vector3f(0.1f, 0.1f, 0.1f);
+        directionalLight.direction = new Vector3f(1.0f, -1.0f, 1.0f);
+        directionalLight.ambient = new Vector3f(0.2f, 0.2f, 0.2f);
         directionalLight.diffuse = new Vector3f(0.8f, 0.8f, 0.8f);
         directionalLight.specular = new Vector3f(1.0f, 1.0f, 1.0f);
         directionalLightEntity.AddComponent(directionalLight);
@@ -71,6 +74,23 @@ public class Game {
 
         pointLightEntity.AddComponent(pointLight);
         pointLightEntity.AddComponent(pointLightTransform);
+
+        Entity spotLightEntity = registry.CreateEntity();
+
+        SpotLightComponent spotLightComponent = new SpotLightComponent();
+        spotLightComponent.cutOff = 12.5f;
+        spotLightComponent.ambient = new Vector3f(0.1f, 0.1f, 0.1f);
+        spotLightComponent.diffuse = new Vector3f(0.5f, 0.5f, 0.5f);
+        spotLightComponent.specular = new Vector3f(1.0f, 1.0f, 1.0f);
+        spotLightComponent.constant = 0.5f;
+        spotLightComponent.linear = 0.09f;
+        spotLightComponent.quadratic = 0.032f;
+
+        TransformComponent spotLightTransform = new TransformComponent();
+        spotLightTransform.SetRotation(new Vector3f(0.0f, 180.0f, 0.0f));
+
+        spotLightEntity.AddComponent(spotLightTransform);
+        spotLightEntity.AddComponent(spotLightComponent);
 
         Entity environment = registry.CreateEntity();
         environment.AddComponent(new EnvironmentComponent("skybox"));

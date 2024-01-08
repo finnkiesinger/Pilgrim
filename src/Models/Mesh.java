@@ -118,7 +118,8 @@ public class Mesh implements Comparable<Mesh> {
             String shaderName,
             Entity entity,
             List<Entity> directionalLights,
-            List<Entity> pointLights
+            List<Entity> pointLights,
+            Skybox skybox
     ) {
         try {
             Shader shader = ShaderLibrary.Instance().Use(shaderName);
@@ -170,15 +171,20 @@ public class Mesh implements Comparable<Mesh> {
             shader.Set("nrPointLights", pointLights.size());
             shader.Set("nrDirectionalLights", directionalLights.size());
 
-
             Texture texture = material.GetTextureDiffuse();
             shader.Set("hasTexture", texture == TextureCache.GetInstance().GetTexture(ResourceLoader.GetPath("textures/default.png")) ? 0 : 1);
             glActiveTexture(GL_TEXTURE0);
             texture.Bind();
-
             texture = material.GetTextureSpecular();
             glActiveTexture(GL_TEXTURE1);
             texture.Bind();
+
+            if (skybox != null) {
+                shader.Set("hasSkybox", 1);
+                skybox.GetCubemap().Bind();
+            } else {
+                shader.Set("hasSkybox", 0);
+            }
 
             glBindVertexArray(VAO);
             glDrawElements(GL_TRIANGLES, indices.length, GL_UNSIGNED_INT, 0);
