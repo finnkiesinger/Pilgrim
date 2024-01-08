@@ -42,7 +42,7 @@ public class Model {
     }
 
     public void DrawTransparent(String shader, Entity transform, List<Entity> directionalLights, List<Entity> pointLights) {
-        transparent.stream().sorted(Comparator.naturalOrder()).forEach(mesh -> mesh.Draw(shader, transform, directionalLights, pointLights));
+        transparent.stream().sorted(Comparator.reverseOrder()).forEach(mesh -> mesh.Draw(shader, transform, directionalLights, pointLights));
     }
 
     public void Draw(String shader, Entity transform, List<Entity> directionalLights, List<Entity> pointLights) {

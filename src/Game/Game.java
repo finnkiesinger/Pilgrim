@@ -9,8 +9,6 @@ import Utilities.*;
 import Window.*;
 import org.joml.Vector3f;
 
-import javax.swing.*;
-
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Game {
@@ -94,19 +92,6 @@ public class Game {
         float deltaTime = GetDeltaTime();
 
         registry.Update();
-
-        if (Input.IsKeyJustPressed(GLFW_KEY_H)) {
-            JFrame frame = new JFrame();
-            frame.setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
-            for (ECS.System system : registry.GetSystemList()) {
-                JLabel systemName = new JLabel(system.getClass().getName());
-                JLabel entityCount = new JLabel(String.valueOf(system.GetSystemEntities().size()));
-                frame.add(systemName);
-                frame.add(entityCount);
-            }
-            frame.pack();
-            frame.setVisible(true);
-        }
 
         registry.GetSystem(CameraSystem.class).Update(deltaTime);
         registry.GetSystem(RenderSystem.class).Update(registry);
