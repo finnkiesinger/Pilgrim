@@ -103,7 +103,7 @@ public class Game {
 
         Entity gui = registry.CreateEntity();
         GuiComponent guiComponent = new GuiComponent();
-        Text text = new Text("Test");
+        Text text = new Text("gDas hier ist wohl nichts weiter als ein test text");
         guiComponent.elements.add(text);
         gui.AddComponent(guiComponent);
 

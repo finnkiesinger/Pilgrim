@@ -10,6 +10,7 @@ import org.joml.Vector3f;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
+import java.util.Arrays;
 
 import static org.lwjgl.opengl.GL40.*;
 
@@ -28,7 +29,7 @@ public class Text extends GuiElement {
     public String text;
 
     public Text(String text) {
-        position = new Vector3f();
+        position = new Vector3f(100.0f, 100.0f, 0.0f);
         this.text = text;
         VAO = glGenVertexArrays();
         glBindVertexArray(VAO);
@@ -54,8 +55,11 @@ public class Text extends GuiElement {
 
     public void Render() {
         try {
+            glDisable(GL_DEPTH_TEST);
             Shader shader = ShaderLibrary.Instance().Use("text");
-            shader.Set("projection", new Matrix4f().ortho(0.0f, Window.ActiveWindow().GetWidth(), 0.0f, Window.ActiveWindow().GetHeight(), 0.1f, 100.0f));
+            shader.Set("projection", new Matrix4f().ortho(0.0f, Window.ActiveWindow().GetWidth(), 0.0f, Window.ActiveWindow().GetHeight(), 1.0f, -1.0f));
+            glActiveTexture(GL_TEXTURE0);
+            glBindVertexArray(VAO);
 
             float x = position.x();
             for (char c : text.toCharArray()) {
@@ -72,17 +76,19 @@ public class Text extends GuiElement {
                         posX + character.width, posY + character.height,
                 };
 
-                glActiveTexture(GL_TEXTURE0);
                 glBindTexture(GL_TEXTURE_2D, character.ID);
-
                 FloatBuffer buffer = MemoryUtil.memAllocFloat(vertices.length);
                 buffer.put(0, vertices);
                 glBindBuffer(GL_ARRAY_BUFFER, VBO);
-                glBufferSubData(GL_ARRAY_BUFFER, VBO, buffer);
+                glBufferSubData(GL_ARRAY_BUFFER, 0, buffer);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
                 MemoryUtil.memFree(buffer);
+
+                glDrawArrays(GL_TRIANGLES, 0, 6);
 
                 x += character.advance >> 6;
             }
+            glEnable(GL_DEPTH_TEST);
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
