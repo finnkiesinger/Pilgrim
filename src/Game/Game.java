@@ -29,6 +29,7 @@ public class Game {
 
     private void Setup() {
         this.lastFrame = (float) glfwGetTime();
+        FontLibrary.Init();
         ShaderLibrary.Instance().Load("default", "default");
         ShaderLibrary.Instance().Load("model", "model");
         ShaderLibrary.Instance().Load("skybox", "skybox");
