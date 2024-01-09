@@ -135,6 +135,14 @@ public class Window {
         this.height = height;
     }
 
+    public float GetWidth() {
+        return width;
+    }
+
+    public float GetHeight() {
+        return height;
+    }
+
     public float GetAspectRatio() {
         return this.width / this.height;
     }

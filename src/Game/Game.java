@@ -4,6 +4,7 @@ import ECS.Entity;
 import ECS.Registry;
 import EventBus.EventBus;
 import Models.*;
+import Models.GUI.Text;
 import Systems.*;
 import Utilities.*;
 import Window.*;
@@ -33,6 +34,7 @@ public class Game {
         ShaderLibrary.Instance().Load("default", "default");
         ShaderLibrary.Instance().Load("model", "model");
         ShaderLibrary.Instance().Load("skybox", "skybox");
+        ShaderLibrary.Instance().Load("text", "text");
         Model car = ModelLoader.Load("demo_car/scene.gltf");
         Model cuboid = ModelLoader.Load("backpack/backpack.obj");
 
@@ -42,6 +44,7 @@ public class Game {
         registry.AddSystem(new PointLightSystem());
         registry.AddSystem(new SpotLightSystem());
         registry.AddSystem(new EnvironmentRenderSystem());
+        registry.AddSystem(new GuiRenderSystem());
 
         Entity carEntity = registry.CreateEntity();
         carEntity.AddComponent(new ModelComponent(car));
@@ -98,6 +101,12 @@ public class Game {
         Entity environment = registry.CreateEntity();
         environment.AddComponent(new EnvironmentComponent("skybox"));
 
+        Entity gui = registry.CreateEntity();
+        GuiComponent guiComponent = new GuiComponent();
+        Text text = new Text("Test");
+        guiComponent.elements.add(text);
+        gui.AddComponent(guiComponent);
+
         registry.Update();
 
         Camera.SetCamera(new Camera(new Vector3f(0.0f, 1.0f, 10.0f)));
@@ -106,6 +115,11 @@ public class Game {
     public void Run() {
         Setup();
         window.Run();
+        Dispose();
+    }
+
+    public void Dispose() {
+        FontLibrary.Dispose();
     }
 
     private float GetDeltaTime() {
@@ -124,6 +138,7 @@ public class Game {
         registry.GetSystem(CameraSystem.class).Update(deltaTime);
         registry.GetSystem(EnvironmentRenderSystem.class).Update();
         registry.GetSystem(RenderSystem.class).Update(registry);
+        registry.GetSystem(GuiRenderSystem.class).Update();
 
         Input.Clear();
         Mouse.Clear();

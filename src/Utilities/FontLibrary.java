@@ -3,15 +3,14 @@ package Utilities;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.util.freetype.FT_Face;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.lwjgl.util.freetype.FreeType.*;
 
 public class FontLibrary {
     private static FontLibrary instance;
     private static boolean initialized = false;
-
-    private FontLibrary(long library) {
-        this.library = library;
-    }
 
     public static FontLibrary Instance() {
         if (!initialized) {
@@ -20,7 +19,13 @@ public class FontLibrary {
         return instance;
     }
 
+    private final Map<String, Font> fonts;
     private final long library;
+
+    private FontLibrary(long library) {
+        this.library = library;
+        fonts = new HashMap<>();
+    }
 
     public static void Init() {
         PointerBuffer buffer = PointerBuffer.allocateDirect(1);
@@ -46,6 +51,23 @@ public class FontLibrary {
 
         FT_Set_Pixel_Sizes(face, 0, 48);
 
+        Font font = new Font(face);
+
+        instance.fonts.put("Inter", font);
         initialized = true;
+
+        FT_Done_Face(face);
+    }
+
+    public static void Dispose() {
+        FT_Done_FreeType(Instance().library);
+    }
+
+    public static Font Get() {
+        return Instance().fonts.get("Inter");
+    }
+
+    public static Font Get(String name) {
+        return Instance().fonts.getOrDefault(name, Instance().fonts.get("Inter"));
     }
 }
