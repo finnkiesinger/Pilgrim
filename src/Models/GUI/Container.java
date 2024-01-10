@@ -74,9 +74,9 @@ public class Container extends GuiElement {
             Shader shader = ShaderLibrary.Instance().Use("container");
             shader.Set("projection", new Matrix4f().ortho(0.0f, Window.ActiveWindow().GetWidth(), 0.0f, Window.ActiveWindow().GetHeight(), 1.0f, -1.0f));
             shader.Set("background", style.background);
-            shader.Set("width", style.width);
-            shader.Set("height", style.height);
-            shader.Set("radius", style.borderRadius);
+            shader.Set("width", (float) style.width);
+            shader.Set("height", (float) style.height);
+            shader.Set("radius", (float) style.borderRadius);
             glBindVertexArray(VAO);
 
             float x = offset.x();
