@@ -49,7 +49,7 @@ public class FontLibrary {
 
         FT_Face face = FT_Face.create(faceBuffer.get(0));
 
-        FT_Set_Pixel_Sizes(face, 0, 128);
+        FT_Set_Pixel_Sizes(face, 0, Constants.FONT_SIZE);
 
         Font font = new Font(face);
 

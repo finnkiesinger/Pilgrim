@@ -4,6 +4,7 @@ import ECS.Entity;
 import ECS.Registry;
 import EventBus.EventBus;
 import Models.*;
+import Models.GUI.GUI;
 import Models.GUI.Text;
 import Systems.*;
 import Utilities.*;
@@ -21,11 +22,14 @@ public class Game {
     private final String title;
     private float lastFrame;
 
+    private GUI gui;
+
     public Game(String title) {
         this.title = title;
         this.registry = new Registry();
         this.eventBus = new EventBus();
         this.window = new Window(this);
+        this.gui = new GUI();
     }
 
     private void Setup() {
@@ -44,7 +48,6 @@ public class Game {
         registry.AddSystem(new PointLightSystem());
         registry.AddSystem(new SpotLightSystem());
         registry.AddSystem(new EnvironmentRenderSystem());
-        registry.AddSystem(new GuiRenderSystem());
 
         Entity carEntity = registry.CreateEntity();
         carEntity.AddComponent(new ModelComponent(car));
@@ -101,11 +104,8 @@ public class Game {
         Entity environment = registry.CreateEntity();
         environment.AddComponent(new EnvironmentComponent("skybox"));
 
-        Entity gui = registry.CreateEntity();
-        GuiComponent guiComponent = new GuiComponent();
         Text text = new Text("gDas hier ist wohl nichts weiter als ein test text");
-        guiComponent.elements.add(text);
-        gui.AddComponent(guiComponent);
+        gui.AddElement(text);
 
         registry.Update();
 
@@ -138,7 +138,8 @@ public class Game {
         registry.GetSystem(CameraSystem.class).Update(deltaTime);
         registry.GetSystem(EnvironmentRenderSystem.class).Update();
         registry.GetSystem(RenderSystem.class).Update(registry);
-        registry.GetSystem(GuiRenderSystem.class).Update();
+
+        gui.Render();
 
         Input.Clear();
         Mouse.Clear();
