@@ -174,7 +174,6 @@ public class Mesh implements Comparable<Mesh> {
                 SpotLightComponent spotLightComponent = spotLight.GetComponent(SpotLightComponent.class);
                 TransformComponent spotLightTransform = spotLight.GetComponent(TransformComponent.class);
 
-                /*
                 shader.Set("spotLights[" + i + "].position", spotLightTransform.GetPosition());
                 Vector3f rotation = spotLightTransform.GetRotation();
                 Vector3f direction = new Vector3f(0.0f, 0.0f, 1.0f);
@@ -183,10 +182,6 @@ public class Mesh implements Comparable<Mesh> {
                 direction.rotateZ(toRadians(rotation.z));
                 direction.normalize();
                 shader.Set("spotLights[" + i + "].direction", direction);
-                */
-
-                shader.Set("spotLights[" + i + "].position", Camera.GetPosition());
-                shader.Set("spotLights[" + i + "].direction", Camera.GetFront());
 
                 shader.Set("spotLights[" + i + "].cutOff", cos(toRadians(spotLightComponent.cutOff)));
                 shader.Set("spotLights[" + i + "].outerCutOff", cos(toRadians(spotLightComponent.outerCutOff)));

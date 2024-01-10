@@ -4,12 +4,12 @@ import ECS.Entity;
 import ECS.Registry;
 import EventBus.EventBus;
 import Models.*;
-import Models.GUI.GUI;
-import Models.GUI.Text;
+import Models.GUI.*;
 import Systems.*;
 import Utilities.*;
 import Window.*;
 import org.joml.Vector3f;
+import org.joml.Vector4f;
 
 import javax.xml.crypto.dsig.Transform;
 
@@ -39,6 +39,7 @@ public class Game {
         ShaderLibrary.Instance().Load("model", "model");
         ShaderLibrary.Instance().Load("skybox", "skybox");
         ShaderLibrary.Instance().Load("text", "text");
+        ShaderLibrary.Instance().Load("container", "container");
         Model car = ModelLoader.Load("demo_car/scene.gltf");
         Model cuboid = ModelLoader.Load("backpack/backpack.obj");
 
@@ -104,8 +105,16 @@ public class Game {
         Entity environment = registry.CreateEntity();
         environment.AddComponent(new EnvironmentComponent("skybox"));
 
-        Text text = new Text("gDas hier ist wohl nichts weiter als ein test text");
-        gui.AddElement(text);
+        Text text = new Text("Button", new TextStyle(
+                32,
+                new Vector4f(1.0f)
+        ));
+
+        Center center = new Center(text);
+
+        Container container = new Container(center, new ContainerStyle(300, 100, 16, new Vector4f(0.0f, 0.0f, 0.0f, 1.0f)));
+
+        gui.AddElement(container);
 
         registry.Update();
 
@@ -143,6 +152,10 @@ public class Game {
 
         Input.Clear();
         Mouse.Clear();
+    }
+
+    public void OnResize() {
+
     }
 
     public String GetTitle() {

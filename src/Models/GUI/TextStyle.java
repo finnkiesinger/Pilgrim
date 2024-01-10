@@ -17,6 +17,10 @@ public class TextStyle {
     }
 
     public int GetFontSize() {
-        return fontSize;
+        return this.fontSize;
+    }
+
+    public Vector4f GetColor() {
+        return this.color;
     }
 }

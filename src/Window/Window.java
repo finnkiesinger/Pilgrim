@@ -21,8 +21,9 @@ public class Window {
     }
 
     private static final GLFWWindowSizeCallbackI resizeCallback = (window, width, height) -> {
-        Window.ActiveWindow().SetWidth(width);
-        Window.ActiveWindow().SetHeight(height);
+        Window.active.SetWidth(width);
+        Window.active.SetHeight(height);
+        Window.active.game.OnResize();
 
         try(MemoryStack stack = MemoryStack.stackPush()) {
             FloatBuffer scaleX = stack.mallocFloat(1);

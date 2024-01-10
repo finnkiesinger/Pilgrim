@@ -1,7 +1,11 @@
 package Models.GUI;
 
+import org.joml.Vector3f;
+
 import java.util.List;
 import java.util.ArrayList;
+
+import static org.lwjgl.opengl.GL11.*;
 
 public class GUI {
     private final List<GuiElement> elements;
@@ -11,9 +15,11 @@ public class GUI {
     }
 
     public void Render() {
+        glDisable(GL_DEPTH_TEST);
         for (GuiElement element : elements) {
-            element.Render();
+            element.Render(new Vector3f(30.0f, 30.0f, 0.0f));
         }
+        glEnable(GL_DEPTH_TEST);
     }
 
     public void AddElement(GuiElement element) {
