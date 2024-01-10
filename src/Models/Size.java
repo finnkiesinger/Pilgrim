@@ -1,12 +1,11 @@
 package Models;
 
 public class Size {
-    public static final Size AUTOMATIC = new Size(-1, -1);
 
-    public int width;
-    public int height;
+    public float width;
+    public float height;
 
-    public Size(int width, int height) {
+    public Size(float width, float height) {
         this.width = width;
         this.height = height;
     }

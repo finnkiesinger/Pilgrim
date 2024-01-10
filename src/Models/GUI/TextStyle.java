@@ -3,13 +3,8 @@ package Models.GUI;
 import org.joml.Vector4f;
 
 public class TextStyle {
-    private int fontSize;
-    private Vector4f color;
-
-    public TextStyle(int fontSize, Vector4f color) {
-        this.fontSize = fontSize;
-        this.color = color;
-    }
+    public int fontSize;
+    public Vector4f color;
 
     public TextStyle() {
         this.fontSize = 16;

@@ -8,17 +8,10 @@ public class ContainerStyle {
     public int height;
     public Vector4f background;
 
-    public ContainerStyle(int width, int height) {
-        this.width = width;
-        this.height = height;
+    public ContainerStyle() {
+        this.width = 0;
+        this.height = 0;
         this.borderRadius = 0;
         this.background = new Vector4f();
-    }
-
-    public ContainerStyle(int width, int height, int borderRadius, Vector4f background) {
-        this.background = background;
-        this.borderRadius = borderRadius;
-        this.width = width;
-        this.height = height;
     }
 }

@@ -1,32 +1,37 @@
 package Models.GUI;
 
 import Models.Size;
+import Window.Window;
 import org.joml.Vector3f;
 
 public class Center extends GuiElement {
     private final GuiElement child;
 
-    protected void CalculateSize() {
-        if (parent == null) {
-            this.size = child.size;
-            return;
+    protected Size GetSize() {
+        Size size = new Size(Window.ActiveWindow().GetWidth(), Window.ActiveWindow().GetHeight());
+        if (parent != null) {
+            Size parentSize = parent.GetSize();
+            if (parentSize.height != 0) {
+                size.height = parentSize.height;
+            }
+            if (parentSize.width != 0) {
+                size.width = parentSize.width;
+            }
+
         }
 
-        if (parent.size == Size.AUTOMATIC) {
-            this.size = child.size;
-        } else {
-            this.size = parent.size;
-        }
+        return size;
     }
 
     public Center(GuiElement child) {
         this.child = child;
         this.child.SetParent(this);
-        CalculateSize();
     }
 
     public void Render(Vector3f offset) {
-        Vector3f center = new Vector3f((size.width - child.size.width) / 2.0f, (size.height - child.size.height) / 2.0f, 0.0f);
+        Size size = GetSize();
+        Size childSize = child.GetSize();
+        Vector3f center = new Vector3f((size.width - childSize.width) / 2.0f, (size.height - childSize.height) / 2.0f, 0.0f);
         this.child.Render(center.add(offset));
     }
 }

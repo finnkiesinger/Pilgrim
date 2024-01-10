@@ -17,7 +17,7 @@ public class GUI {
     public void Render() {
         glDisable(GL_DEPTH_TEST);
         for (GuiElement element : elements) {
-            element.Render(new Vector3f(30.0f, 30.0f, 0.0f));
+            element.Render(new Vector3f());
         }
         glEnable(GL_DEPTH_TEST);
     }

@@ -56,20 +56,16 @@ public class Text extends GuiElement {
 
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        CalculateSize();
     }
 
     public Text(String text, TextStyle style) {
         this(text);
         this.style = style;
-        CalculateSize();
-        System.out.println(size);
     }
 
-    protected void CalculateSize() {
-        int width = 0;
-        int height = 0;
+    protected Size GetSize() {
+        float width = 0;
+        float height = 0;
 
         for (char c : text.toCharArray()) {
             Font.Character character = FontLibrary.Get().Get(c);
@@ -80,7 +76,7 @@ public class Text extends GuiElement {
         }
 
         float scale = style.GetFontSize() / (float) Constants.FONT_SIZE;
-        this.size = new Size((int) (width * scale), (int) (height * scale));
+        return new Size(width * scale, height * scale);
     }
 
     public void Render(Vector3f offset) {

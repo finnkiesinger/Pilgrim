@@ -105,16 +105,25 @@ public class Game {
         Entity environment = registry.CreateEntity();
         environment.AddComponent(new EnvironmentComponent("skybox"));
 
-        Text text = new Text("Button", new TextStyle(
-                32,
-                new Vector4f(1.0f)
-        ));
+        TextStyle textStyle = new TextStyle();
+        textStyle.fontSize = 32;
+        textStyle.color = new Vector4f(1.0f);
+        Text text = new Text("Button", textStyle);
 
         Center center = new Center(text);
 
-        Container container = new Container(center, new ContainerStyle(300, 100, 16, new Vector4f(0.0f, 0.0f, 0.0f, 1.0f)));
+        ContainerStyle containerStyle = new ContainerStyle();
+        containerStyle.background = new Vector4f(0.0f, 0.0f, 0.0f, 0.2f);
+        containerStyle.borderRadius = 16;
+        Container container = new Container(center, containerStyle);
 
-        gui.AddElement(container);
+        Positioned positioned = new Positioned(container);
+        positioned.x = 100.0f;
+        positioned.y = 300.0f;
+        positioned.width = 300;
+        positioned.height = 200;
+
+        gui.AddElement(positioned);
 
         registry.Update();
 

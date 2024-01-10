@@ -8,14 +8,10 @@ public abstract class GuiElement {
     public Vector3f position;
     protected GuiElement parent;
 
-    protected Size size = Size.AUTOMATIC;
-
-    abstract protected void CalculateSize();
+    abstract protected Size GetSize();
 
     protected void SetParent(GuiElement parent) {
         this.parent = parent;
-        parent.CalculateSize();
-        CalculateSize();
     }
 
     abstract public void Render(Vector3f offset);

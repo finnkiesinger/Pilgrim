@@ -30,7 +30,6 @@ public class Container extends GuiElement {
 
     public Container(GuiElement child) {
         this();
-        this.style = new ContainerStyle(0, 0);
         this.child = child;
         this.child.SetParent(this);
     }
@@ -61,28 +60,46 @@ public class Container extends GuiElement {
     public Container(GuiElement child, ContainerStyle style) {
         this(child);
         this.style = style;
-        CalculateSize();
-        child.CalculateSize();
     }
 
-    protected void CalculateSize() {
-        size = new Size(style.width, style.height);
+    protected Size GetSize() {
+        float width = Window.ActiveWindow().GetWidth();
+        float height = Window.ActiveWindow().GetHeight();
+
+        if (style.width == 0 || style.height == 0) {
+            if (parent != null) {
+                Size parentSize = parent.GetSize();
+
+                if (style.width == 0) {
+                    width = parentSize.width;
+                }
+                if (style.height == 0) {
+                    height = parentSize.height;
+                }
+            }
+        } else {
+            width = style.width;
+            height = style.height;
+        }
+
+        return new Size(width, height);
     }
 
     public void Render(Vector3f offset) {
         try {
+            Size size = GetSize();
             Shader shader = ShaderLibrary.Instance().Use("container");
             shader.Set("projection", new Matrix4f().ortho(0.0f, Window.ActiveWindow().GetWidth(), 0.0f, Window.ActiveWindow().GetHeight(), 1.0f, -1.0f));
             shader.Set("background", style.background);
-            shader.Set("width", (float) style.width);
-            shader.Set("height", (float) style.height);
+            shader.Set("width", (float) size.width);
+            shader.Set("height", (float) size.height);
             shader.Set("radius", (float) style.borderRadius);
             glBindVertexArray(VAO);
 
             float x = offset.x();
             float y = offset.y();
-            float height = child.size.height;
-            float width = child.size.width;
+            float height = size.height;
+            float width = size.width;
 
             float[] vertices = {
                     x, y + height,
