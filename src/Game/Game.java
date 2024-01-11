@@ -108,22 +108,32 @@ public class Game {
         TextStyle textStyle = new TextStyle();
         textStyle.fontSize = 32;
         textStyle.color = new Vector4f(1.0f);
-        Text text = new Text("Button", textStyle);
+        Text text = new Text("Button 1", textStyle);
 
         Center center = new Center(text);
 
         ContainerStyle containerStyle = new ContainerStyle();
         containerStyle.background = new Vector4f(0.0f, 0.0f, 0.0f, 0.2f);
-        containerStyle.borderRadius = 16;
+        containerStyle.height = 150;
         Container container = new Container(center, containerStyle);
 
-        Positioned positioned = new Positioned(container);
-        positioned.x = 100.0f;
-        positioned.y = 300.0f;
-        positioned.width = 300;
-        positioned.height = 200;
+        Text text2 = new Text("Button 2", textStyle);
 
-        gui.AddElement(positioned);
+        Center center2 = new Center(text2);
+
+        Container container2 = new Container(center2, containerStyle);
+
+        Column column = new Column();
+        column.AddChild(container);
+        column.AddChild(container2);
+
+        Anchored anchored = new Anchored(column);
+        anchored.top = 0.0f;
+        anchored.left = 0.0f;
+        anchored.bottom = 0.0f;
+        anchored.width = 400.0f;
+
+        gui.AddElement(anchored);
 
         registry.Update();
 

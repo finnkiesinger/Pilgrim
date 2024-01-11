@@ -63,26 +63,16 @@ public class Container extends GuiElement {
     }
 
     protected Size GetSize() {
-        float width = Window.ActiveWindow().GetWidth();
-        float height = Window.ActiveWindow().GetHeight();
+        Size size = GetParentSize();
 
-        if (style.width == 0 || style.height == 0) {
-            if (parent != null) {
-                Size parentSize = parent.GetSize();
-
-                if (style.width == 0) {
-                    width = parentSize.width;
-                }
-                if (style.height == 0) {
-                    height = parentSize.height;
-                }
-            }
-        } else {
-            width = style.width;
-            height = style.height;
+        if (style.width != -1) {
+            size.width = style.width;
+        }
+        if (style.height != -1) {
+            size.height = style.height;
         }
 
-        return new Size(width, height);
+        return size;
     }
 
     public void Render(Vector3f offset) {

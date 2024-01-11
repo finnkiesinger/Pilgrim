@@ -8,19 +8,7 @@ public class Center extends GuiElement {
     private final GuiElement child;
 
     protected Size GetSize() {
-        Size size = new Size(Window.ActiveWindow().GetWidth(), Window.ActiveWindow().GetHeight());
-        if (parent != null) {
-            Size parentSize = parent.GetSize();
-            if (parentSize.height != 0) {
-                size.height = parentSize.height;
-            }
-            if (parentSize.width != 0) {
-                size.width = parentSize.width;
-            }
-
-        }
-
-        return size;
+        return GetParentSize();
     }
 
     public Center(GuiElement child) {

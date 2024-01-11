@@ -22,7 +22,7 @@ public class GUI {
         glEnable(GL_DEPTH_TEST);
     }
 
-    public void AddElement(GuiElement element) {
+    public void AddElement(Absolute element) {
         elements.add(element);
     }
 }

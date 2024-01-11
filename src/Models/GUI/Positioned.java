@@ -3,7 +3,7 @@ package Models.GUI;
 import Models.Size;
 import org.joml.Vector3f;
 
-public class Positioned extends GuiElement {
+public class Positioned extends Absolute {
     public float x;
     public float y;
     public float width;
@@ -32,6 +32,6 @@ public class Positioned extends GuiElement {
     }
 
     public void Render(Vector3f offset) {
-        child.Render(new Vector3f(x, y, 0.0f));
+        child.Render(new Vector3f(x, y, 0.0f).add(offset));
     }
 }

@@ -9,8 +9,8 @@ public class ContainerStyle {
     public Vector4f background;
 
     public ContainerStyle() {
-        this.width = 0;
-        this.height = 0;
+        this.width = -1;
+        this.height = -1;
         this.borderRadius = 0;
         this.background = new Vector4f();
     }
